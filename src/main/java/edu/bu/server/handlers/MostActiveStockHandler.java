@@ -6,7 +6,6 @@ import edu.bu.analytics.AnalyticsComputor;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** Supports the mostactive HTTP endpoint. */
 public class MostActiveStockHandler implements HttpHandler {
   final AnalyticsComputor analyticsComputor;
 
