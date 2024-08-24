@@ -116,6 +116,13 @@ task executeServerIntegrationTest(type: Test) {
 	}
 }
 
+task preCommit(){
+	dependsOn clean, spotlessApply, build
+	doLast {
+		println 'Pre-commit check Passed!'
+	}
+}
+
 kotlin {
 	jvmToolchain(11)
 }
