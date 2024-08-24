@@ -42,6 +42,8 @@ Some useful gradle tasks for the project are:
 
 * **gradle clean build** - perform a clean build (the build cache is thrown out at the start of the build).  This includes  compilation, test execution, and static analysis.  If this succeeds, your project is in a good state.
 * **gradle test** - execute the test suite.
+* **gradle spotlessApply** - reformat any file in the project that does not conform to our consistent format standard.
+* **gradle preCommit** - cleans, applies spotless, and builds.  Generally a great idea to run this before committing code to make sure everything is in a good state.
 * **gradle runServer** - run the StockApp server - includes all of the components described above and StockApp will query FinHub for stock updates.
 * **gradle runServerWithMockFinhub** - run the StockApp server.  Instead of querying the "real" FinHub API, a mock FinHub client is used to provide canned stock updates.  This is useful for running locally when querying a real, unpredictable endpoint is not desired.  The canned responses are deterministic and consistent and good for testing changes iteratively.
 * **./serviceTest.sh** - this script starts the StockApp server using the MockFinHub client and executes a suite of service tests against the running server.
