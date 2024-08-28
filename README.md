@@ -2,7 +2,7 @@
 
 A high level overview of the StockApp application is below:
 
-<img width="1535" alt="image" src="https://github.com/user-attachments/assets/45591086-3886-428c-9279-5fecf95a3611">
+<img width="1535" alt="image" src="assets/StockAppDiagram.png">
 
 It consists of the following components:
 
