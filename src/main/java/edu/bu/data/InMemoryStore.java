@@ -55,4 +55,9 @@ public class InMemoryStore implements DataStore {
   public boolean haveSymbol(String symbol) {
     return responsesBySymbol.containsKey(symbol.toUpperCase());
   }
+
+  @Override
+  public int numberOfUpdatesSeen() {
+    return numberOfUpdates.get();
+  }
 }

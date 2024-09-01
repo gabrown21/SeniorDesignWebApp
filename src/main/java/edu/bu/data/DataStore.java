@@ -20,4 +20,9 @@ public interface DataStore {
 
   /** Return true if the store has seen the given symbol. */
   boolean haveSymbol(String symbol);
+
+  /**
+   * @return the nummber of total updates, across all stocks seen by this data store.
+   */
+  int numberOfUpdatesSeen();
 }
