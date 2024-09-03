@@ -37,6 +37,9 @@ For example:
 ## Building and Running
 StockApp is built with [gradle](https://gradle.org/) and gradle specifics are configured in `build.gradle` at the root of the repository.
 
+## Logging
+This project uses the lightweight [TinyLog](https://tinylog.org/v2/) framework for logging.  The configuration can be found at [src/main/resources/tinylog.properties](src/main/resources/tinylog.properties).
+
 ### Common Gradle targets
 Some useful gradle tasks for the project are:
 
