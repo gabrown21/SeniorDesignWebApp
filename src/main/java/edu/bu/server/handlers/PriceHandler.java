@@ -6,6 +6,7 @@ import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.analytics.UnknownSymbolException;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.tinylog.Logger;
 
 /** Handler for price updates arriving via WebSocket callbacks from Finhub. */
 public class PriceHandler implements HttpHandler {
@@ -27,6 +28,8 @@ public class PriceHandler implements HttpHandler {
     } catch (UnknownSymbolException e) {
       response = e.getMessage() + "\n";
     }
+
+    Logger.info("Handled price request for {}, responding with {}.", symbol, response);
 
     exchange.sendResponseHeaders(200, response.length());
 
