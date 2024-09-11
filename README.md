@@ -1,4 +1,4 @@
-# StockApp
+# Gabriel Brown - StockApp
 
 A high level overview of the StockApp application is below:
 
