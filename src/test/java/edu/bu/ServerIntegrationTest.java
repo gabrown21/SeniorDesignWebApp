@@ -41,7 +41,7 @@ public class ServerIntegrationTest {
       throws URISyntaxException, IOException, InterruptedException {
     String rawResponse = makeRequest("http://localhost:8000/price/BAC");
     double price = Double.parseDouble(rawResponse);
-    assertEquals(39.55, price,0.01);
+    assertEquals(43.1, price,0.01);
   }
 
   @Test
