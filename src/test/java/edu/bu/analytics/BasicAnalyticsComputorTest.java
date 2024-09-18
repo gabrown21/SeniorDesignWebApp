@@ -3,6 +3,7 @@ package edu.bu.analytics;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import edu.bu.data.DataStore;
 import edu.bu.data.InMemoryStore;
 import edu.bu.finhub.FinhubResponse;
@@ -159,8 +160,8 @@ public class BasicAnalyticsComputorTest {
   public void knownSymbols_single() {
     dataStore.update(
         ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 100)));
-    // Cannot compare string to Set<String>
-    assertTrue(analyticsComputor.knownSymbols().contains("NVDA"));
+    // Includes the size comparison this way as well
+    assertEquals(ImmutableSet.of("NVDA"), analyticsComputor.knownSymbols());
   }
 
   @Test
@@ -181,5 +182,7 @@ public class BasicAnalyticsComputorTest {
     assertTrue(analyticsComputor.knownSymbols().contains("AAPL"));
     assertTrue(analyticsComputor.knownSymbols().contains("TSLA"));
     assertTrue(analyticsComputor.knownSymbols().contains("NVDA"));
+    //Added in based on PR notes which furthers makes sure those are the only three
+    assertEquals(3, analyticsComputor.knownSymbols().size());
   }
 }
