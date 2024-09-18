@@ -39,13 +39,16 @@ public class ServerIntegrationTest {
   @Test
   public void requestAgainstRunningServer_price()
       throws URISyntaxException, IOException, InterruptedException {
-    // TODO: implement
+    String rawResponse = makeRequest("http://localhost:8000/price/BAC");
+    double price = Double.parseDouble(rawResponse);
+    assertEquals(43.1, price, 0.01);
   }
 
   @Test
   public void requestAgainstRunningServer_mostActiveStock()
       throws URISyntaxException, IOException, InterruptedException {
-    // TODO: implement
+    String rawResponse = makeRequest("http://localhost:8000/mostactive");
+    assertEquals("RIVN", rawResponse);
   }
 
   String makeRequest(String url) throws URISyntaxException, IOException, InterruptedException {
