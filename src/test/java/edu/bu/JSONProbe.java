@@ -44,6 +44,7 @@ public class JSONProbe {
 
     @Test
     public void jsonProbe_forceThrow() throws ParseException {
-        // TODO: implement
+        JSONParser parser = new JSONParser();
+        JSONObject object = (JSONObject) parser.parse(PROBE_STRING_WRONG);
     }
 }
