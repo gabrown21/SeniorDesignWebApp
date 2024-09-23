@@ -13,6 +13,8 @@ public class JSONProbe {
 
     static final String PROBE_STRING =
             "{\"data\":" + "[" + "{\"p\":215,\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]" + "}";
+    static final String PROBE_STRING_NO_PRICE =
+            "{\"data\":" + "[{\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]" + "}";
 
     @Test
     public void jsonProbe() throws ParseException {
@@ -30,7 +32,16 @@ public class JSONProbe {
 
     @Test
     public void jsonProbe_noPrice() throws ParseException {
-        // TODO: implement
+        JSONParser parser = new JSONParser();
+        JSONObject object = (JSONObject) parser.parse(PROBE_STRING_NO_PRICE);
+        JSONArray arrayData = (JSONArray) object.get("data");
+        JSONObject firstPoint = (JSONObject) arrayData.get(0);
+
+        long priceObject = (long) firstPoint.get("p");
+        //Used to find type
+        //System.out.println("Type of 'p': " + priceObject.getClass().getName());
+        System.out.println(priceObject);
+        System.out.println(PROBE_STRING);
     }
 
     @Test
