@@ -6,6 +6,7 @@ import edu.bu.analytics.AnalyticsComputor;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/** Most active stock handler that inherits from HttpHandler */
 public class MostActiveStockHandler implements HttpHandler {
   final AnalyticsComputor analyticsComputor;
 

@@ -1,6 +1,7 @@
 package edu.bu.finhub;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -18,7 +19,7 @@ public class FinhubParser {
     try {
       jsonObject = (JSONObject) parser.parse(response);
     } catch (ParseException e) {
-      return null;
+      return Collections.emptyList();
     }
 
     List<FinhubResponse> results = new ArrayList<>();

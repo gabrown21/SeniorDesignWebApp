@@ -23,7 +23,7 @@ public class InMemoryStore implements DataStore {
   final AtomicInteger numberOfUpdates = new AtomicInteger(0);
 
   public InMemoryStore() {
-    this.responsesBySymbol = new ConcurrentHashMap();
+    this.responsesBySymbol = new ConcurrentHashMap<>();
   }
 
   @Override

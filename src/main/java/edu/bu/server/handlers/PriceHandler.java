@@ -33,7 +33,12 @@ public class PriceHandler implements HttpHandler {
 
     exchange.sendResponseHeaders(200, response.length());
 
-    OutputStream outputStream = exchange.getResponseBody();
-    outputStream.write(response.getBytes());
+    OutputStream outputStream = null;
+    try {
+      outputStream = exchange.getResponseBody();
+      outputStream.write(response.getBytes());
+    } finally {
+      outputStream.close();
+    }
   }
 }
