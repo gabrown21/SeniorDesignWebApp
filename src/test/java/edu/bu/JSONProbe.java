@@ -14,7 +14,9 @@ public class JSONProbe {
     static final String PROBE_STRING =
             "{\"data\":" + "[" + "{\"p\":215,\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]" + "}";
     static final String PROBE_STRING_NO_PRICE =
-            "{\"data\":" + "[{\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]" + "}";
+            "{\"data\":" + "[" + "{\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]" + "}";
+    static final String PROBE_STRING_WRONG =
+            "{\"data\":" + "[{\"s\":\"AAPL\",\"t\":1704067200000,\"v\":1}," + "]";
 
     @Test
     public void jsonProbe() throws ParseException {
@@ -23,11 +25,10 @@ public class JSONProbe {
         JSONArray arrayData = (JSONArray) object.get("data");
         JSONObject firstPoint = (JSONObject) arrayData.get(0);
 
-        long priceObject = (long) firstPoint.get("p");
+        long price = (long) firstPoint.get("p");
         //Used to find type
         //System.out.println("Type of 'p': " + priceObject.getClass().getName());
-        System.out.println(priceObject);
-        System.out.println(PROBE_STRING);
+        System.out.println(price);
     }
 
     @Test
@@ -37,11 +38,8 @@ public class JSONProbe {
         JSONArray arrayData = (JSONArray) object.get("data");
         JSONObject firstPoint = (JSONObject) arrayData.get(0);
 
-        long priceObject = (long) firstPoint.get("p");
-        //Used to find type
-        //System.out.println("Type of 'p': " + priceObject.getClass().getName());
-        System.out.println(priceObject);
-        System.out.println(PROBE_STRING);
+        Long price = (Long) firstPoint.get("p");
+        System.out.println(price);
     }
 
     @Test
