@@ -13,20 +13,20 @@ pmd {
 	pmdMain {
 		rulesMinimumPriority = 4
 		ruleSets = [
-//				"category/java/design.xml/AvoidDeeplyNestedIfStmts",
-//				"category/java/design.xml/CollapsibleIfStatements",
-//				"category/java/design.xml/CognitiveComplexity",
-//				"category/java/design.xml/CyclomaticComplexity",
-//				"category/java/bestpractices.xml/UnusedLocalVariable",
-//				"category/java/codestyle.xml/ShortVariable",
-//				"category/java/codestyle.xml/UseDiamondOperator",
-//				"category/java/errorprone.xml/BrokenNullCheck",
-//				"category/java/errorprone.xml/CloseResource",
-//				"category/java/errorprone.xml/CompareObjectsWithEquals",
-//				"category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull",
+				"category/java/design.xml/AvoidDeeplyNestedIfStmts",
+				"category/java/design.xml/CollapsibleIfStatements",
+				"category/java/design.xml/CognitiveComplexity",
+				"category/java/design.xml/CyclomaticComplexity",
+				"category/java/bestpractices.xml/UnusedLocalVariable",
+				"category/java/codestyle.xml/ShortVariable",
+				"category/java/codestyle.xml/UseDiamondOperator",
+				"category/java/errorprone.xml/BrokenNullCheck",
+				"category/java/errorprone.xml/CloseResource",
+				"category/java/errorprone.xml/CompareObjectsWithEquals",
+				"category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull",
 				"category/java/performance.xml/AvoidArrayLoops"
 		]
-//		ruleSetFiles(files("pmdruleset.xml"))
+		ruleSetFiles(files("pmdruleset.xml"))
 	}
 
 	pmdTest {

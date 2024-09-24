@@ -159,4 +159,95 @@ public class BasicAnalyticsComputorTestWithMock {
 
     assertEquals(ImmutableSet.of("NVDA"), basicAnalyticsComputor.knownSymbols());
   }
+
+  @Test
+  public void mostActiveStockInWindow_noData() {
+
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of());
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
+
+    assertNull(basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
+
+  @Test
+  public void mostActiveStockInWindow_singleStock() {
+
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
+
+    when(dataStore.getHistory("NVDA"))
+        .thenReturn(
+            ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 100)));
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
+
+    assertEquals("NVDA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
+
+  @Test
+  public void mostActiveStockInWindow_multipleStocks() {
+
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA", "TSLA"));
+
+    when(dataStore.getHistory("NVDA"))
+        .thenReturn(
+            ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 100)));
+
+    when(dataStore.getHistory("TSLA"))
+        .thenReturn(
+            ImmutableList.of(
+                new FinhubResponse(
+                    "TSLA", 300, TEST_TIME.plus(10, ChronoUnit.SECONDS).toEpochMilli(), 300)));
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
+
+    assertEquals("TSLA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
+
+  @Test
+  public void mostActiveStockInWindow_noTradesInWindow() {
+
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
+
+    when(dataStore.getHistory("NVDA"))
+        .thenReturn(
+            ImmutableList.of(
+                new FinhubResponse(
+                    "NVDA", 134.12, TEST_TIME.minus(10, ChronoUnit.DAYS).toEpochMilli(), 100),
+                new FinhubResponse(
+                    "NVDA", 134.12, TEST_TIME.plus(10, ChronoUnit.DAYS).toEpochMilli(), 200)));
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
+
+    assertNull(basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
+
+  @Test
+  public void mostActiveStockInWindow_boundaryCase() {
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
+
+    when(dataStore.getHistory("NVDA"))
+        .thenReturn(
+            ImmutableList.of(
+                new FinhubResponse(
+                    "NVDA",
+                    134.12,
+                    TEST_TIME.minus(1, ChronoUnit.HOURS).toEpochMilli(),
+                    100), // Within window
+                new FinhubResponse(
+                    "NVDA", 134.12, TEST_TIME.toEpochMilli(), 200), // Exactly at endTime
+                new FinhubResponse(
+                    "NVDA",
+                    134.12,
+                    TEST_TIME.minus(1, ChronoUnit.DAYS).toEpochMilli(),
+                    300))); // Exactly at startTime
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME;
+    assertEquals("NVDA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
 }
