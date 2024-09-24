@@ -162,7 +162,7 @@ public class BasicAnalyticsComputorTestWithMock {
 
   @Test
   public void mostActiveStockInWindow_noData() {
-    // No known symbols
+
     when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of());
 
     Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
@@ -173,10 +173,9 @@ public class BasicAnalyticsComputorTestWithMock {
 
   @Test
   public void mostActiveStockInWindow_singleStock() {
-    // Mock known symbol: NVDA
+
     when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
 
-    // Mock trade history for NVDA with one trade in the window
     when(dataStore.getHistory("NVDA"))
         .thenReturn(
             ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 100)));
@@ -184,40 +183,35 @@ public class BasicAnalyticsComputorTestWithMock {
     Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
     Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
 
-    // Assert that NVDA is the most active stock
     assertEquals("NVDA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
   }
 
   @Test
   public void mostActiveStockInWindow_multipleStocks() {
-    // Mock known symbols: NVDA and TSLA
+
     when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA", "TSLA"));
 
-    // Mock trade history for NVDA
     when(dataStore.getHistory("NVDA"))
         .thenReturn(
             ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 100)));
 
-    // Mock trade history for TSLA with higher volume
     when(dataStore.getHistory("TSLA"))
         .thenReturn(
             ImmutableList.of(
                 new FinhubResponse(
-                    "TSLA", 305.00, TEST_TIME.plus(10, ChronoUnit.SECONDS).toEpochMilli(), 300)));
+                    "TSLA", 300, TEST_TIME.plus(10, ChronoUnit.SECONDS).toEpochMilli(), 300)));
 
     Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
     Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
 
-    // Assert that TSLA is the most active stock (300 volume vs 100 for NVDA)
     assertEquals("TSLA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
   }
 
   @Test
   public void mostActiveStockInWindow_noTradesInWindow() {
-    // Mock known symbols: NVDA
+
     when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
 
-    // Mock trade history for NVDA with trades outside the window
     when(dataStore.getHistory("NVDA"))
         .thenReturn(
             ImmutableList.of(
@@ -229,7 +223,32 @@ public class BasicAnalyticsComputorTestWithMock {
     Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
     Instant endTime = TEST_TIME.plus(1, ChronoUnit.DAYS);
 
-    // Assert that no stock is active in the time window
     assertNull(basicAnalyticsComputor.mostActiveStock(startTime, endTime));
+  }
+
+  @Test
+  public void mostActiveStockInWindow_boundaryCase() {
+    when(dataStore.knownSymbols()).thenReturn(ImmutableSet.of("NVDA"));
+
+    when(dataStore.getHistory("NVDA"))
+        .thenReturn(
+            ImmutableList.of(
+                new FinhubResponse(
+                    "NVDA",
+                    134.12,
+                    TEST_TIME.minus(1, ChronoUnit.HOURS).toEpochMilli(),
+                    100), // Within window
+                new FinhubResponse(
+                    "NVDA", 134.12, TEST_TIME.toEpochMilli(), 200), // Exactly at endTime
+                new FinhubResponse(
+                    "NVDA",
+                    134.12,
+                    TEST_TIME.minus(1, ChronoUnit.DAYS).toEpochMilli(),
+                    300))); // Exactly at startTime
+
+    Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
+    Instant endTime = TEST_TIME;
+
+    assertEquals("NVDA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
   }
 }
