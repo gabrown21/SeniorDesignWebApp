@@ -1,5 +1,6 @@
 package edu.bu.analytics;
 
+import java.time.Instant;
 import java.util.Set;
 
 /** Implementors collaborate with the DataStore to support all StockApp computations. */
@@ -31,4 +32,12 @@ public interface AnalyticsComputor {
    *     store
    */
   public double currentPrice(String symbol) throws UnknownSymbolException;
+
+  /**
+   * @param startTime inclusive start of the window of interest
+   * @param endTime inclusive end of the window of interest
+   * @return of all the stocks that the data store is aware of, the symbol of the stock that has
+   *     recorded the highest total trade volume between startTime and endTime, inclusive.
+   */
+  public String mostActiveStock(Instant startTime, Instant endTime);
 }

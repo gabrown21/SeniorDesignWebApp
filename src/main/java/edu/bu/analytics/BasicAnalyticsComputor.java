@@ -1,6 +1,9 @@
 package edu.bu.analytics;
 
 import edu.bu.data.DataStore;
+import edu.bu.finhub.FinhubResponse;
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -75,5 +78,33 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
     if (!dataStore.haveSymbol(symbol)) {
       throw new UnknownSymbolException(symbol);
     }
+  }
+
+  /**
+   * @param startTime inclusive start of the window of interest
+   * @param endTime inclusive end of the window of interest
+   * @return of all the stocks that the data store is aware of, the symbol of the stock that has
+   *     recorded the highest total trade volume between startTime and endTime, inclusive.
+   */
+  public String mostActiveStock(Instant startTime, Instant endTime) {
+    long mostVolume = 0;
+    String mostActive = null;
+
+    for (String symbol : dataStore.knownSymbols()) {
+      long totalVolume = 0;
+      List<FinhubResponse> dataHistory = dataStore.getHistory(symbol);
+
+      for (FinhubResponse response : dataHistory) {
+        Instant tradeTime = Instant.ofEpochMilli(response.msSinceEpoch);
+        if (!tradeTime.isBefore(startTime) && !tradeTime.isAfter(endTime)) {
+          totalVolume += response.volume;
+        }
+      }
+      if (totalVolume > mostVolume) {
+        mostActive = symbol;
+        mostVolume = totalVolume;
+      }
+    }
+    return mostActive;
   }
 }
