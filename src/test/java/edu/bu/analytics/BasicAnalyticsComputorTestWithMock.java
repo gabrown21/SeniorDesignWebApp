@@ -248,7 +248,6 @@ public class BasicAnalyticsComputorTestWithMock {
 
     Instant startTime = TEST_TIME.minus(1, ChronoUnit.DAYS);
     Instant endTime = TEST_TIME;
-
     assertEquals("NVDA", basicAnalyticsComputor.mostActiveStock(startTime, endTime));
   }
 }
