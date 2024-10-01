@@ -40,4 +40,12 @@ public interface AnalyticsComputor {
    *     recorded the highest total trade volume between startTime and endTime, inclusive.
    */
   public String mostActiveStock(Instant startTime, Instant endTime);
+
+  /**
+   * Calculates average colume per second of given symbol
+   *
+   * @param symbol
+   * @return string of average volume per second of given symbol
+   */
+  public String averageVolumePerSecond(String symbol) throws UnknownSymbolException;
 }
