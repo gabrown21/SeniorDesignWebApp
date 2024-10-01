@@ -207,9 +207,7 @@ public class BasicAnalyticsComputorTest {
             new FinhubResponse(
                 "NVDA", 135.33, TEST_TIME.plus(400, ChronoUnit.SECONDS).toEpochMilli(), 500)));
 
-
     String response = analyticsComputor.averageVolumePerSecond("NVDA");
     assertEquals("2.00", response);
   }
-
 }

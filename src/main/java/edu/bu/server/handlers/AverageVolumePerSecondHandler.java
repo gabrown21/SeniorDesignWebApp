@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.tinylog.Logger;
 
+/** Handler for average volume per second. */
 public class AverageVolumePerSecondHandler implements HttpHandler {
   final AnalyticsComputor analyticsComputor;
 
-  public AverageVolumePerSecondHandler(AnalyticsComputor analyticsComputor){
+  public AverageVolumePerSecondHandler(AnalyticsComputor analyticsComputor) {
     this.analyticsComputor = analyticsComputor;
   }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
 
