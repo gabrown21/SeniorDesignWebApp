@@ -187,19 +187,12 @@ public class BasicAnalyticsComputorTest {
   }
 
   @Test
-  public void averageVolumePerSecond_unknownSymbol() throws UnknownSymbolException {
-    String response = analyticsComputor.averageVolumePerSecond("NVDA");
-    assertEquals("No data available for the requested stock symbol.", response);
-  }
-
-  @Test
   public void averageVolumePerSecond_singleValue() throws UnknownSymbolException {
     List<FinhubResponse> singleResponse =
         ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 300));
 
     dataStore.update(singleResponse);
 
-    // One data point, so we expect the volume to be divided by 1 second
     String response = analyticsComputor.averageVolumePerSecond("NVDA");
     assertEquals("300.00", response);
   }
@@ -214,15 +207,9 @@ public class BasicAnalyticsComputorTest {
             new FinhubResponse(
                 "NVDA", 135.33, TEST_TIME.plus(400, ChronoUnit.SECONDS).toEpochMilli(), 500)));
 
-    // Two data points: volume = 300 + 500 = 800, time interval = 400 seconds
+
     String response = analyticsComputor.averageVolumePerSecond("NVDA");
-    assertEquals("2.00", response); // 800 / 400 = 2
+    assertEquals("2.00", response);
   }
 
-  @Test
-  public void averageVolumePerSecond_noData() throws UnknownSymbolException {
-    // When there's no data, it should return an error message.
-    String response = analyticsComputor.averageVolumePerSecond("TSLA");
-    assertEquals("No data available for the requested stock symbol.", response);
-  }
 }

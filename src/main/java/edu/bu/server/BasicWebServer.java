@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.server.handlers.AverageVolumePerSecondHandler;
 import edu.bu.server.handlers.MostActiveStockHandler;
 import edu.bu.server.handlers.PriceHandler;
 import edu.bu.server.handlers.SymbolListHandler;
@@ -40,6 +41,7 @@ public class BasicWebServer {
     // Create handler for most active stock api
     server.createContext("/mostactive", new MostActiveStockHandler(analyticsComputor));
 
+    server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

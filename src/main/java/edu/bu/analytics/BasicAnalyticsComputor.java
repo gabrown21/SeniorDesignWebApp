@@ -133,10 +133,11 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
    * @return a string representing the average volume per second for the given symbol
    */
   public String averageVolumePerSecond(String symbol) throws UnknownSymbolException {
-    checkSymbolExists(symbol);
 
     List<FinhubResponse> history = dataStore.getHistory(symbol);
-
+    if (history == null || history.isEmpty()) {
+      return "No data for the requested symbol.";
+    }
     long totalVolume = totalObservedVolume(symbol);
     long timeInterval = calculateTimeInterval(history);
     double averageVolumePerSecond = (double) totalVolume / (timeInterval / 1000.0);
