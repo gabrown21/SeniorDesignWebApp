@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import edu.bu.data.DataStore;
 import edu.bu.data.InMemoryStore;
 import edu.bu.finhub.FinhubResponse;
+import edu.bu.server.handlers.AverageVolumePerSecondHandler;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -209,5 +210,14 @@ public class BasicAnalyticsComputorTest {
 
     Double response = analyticsComputor.averageVolumePerSecond("NVDA");
     assertEquals(2.00, response);
+  }
+
+  @Test
+  public void testValidSymbol() {
+    AverageVolumePerSecondHandler handler = new AverageVolumePerSecondHandler(analyticsComputor);
+    assertTrue(handler.validSymbol("TSLA"));
+    assertTrue(handler.validSymbol("12345"));
+    assertFalse(handler.validSymbol("A@PL"));
+    assertFalse(handler.validSymbol("AP-PL"));
   }
 }

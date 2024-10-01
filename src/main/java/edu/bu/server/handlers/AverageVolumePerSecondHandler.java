@@ -48,7 +48,7 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
    * @param symbol
    * @return true if symbol is valid
    */
-  private boolean validSymbol(String symbol) {
+  public boolean validSymbol(String symbol) {
     if (symbol == null) {
       return false;
     }
