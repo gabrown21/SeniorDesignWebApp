@@ -3,10 +3,7 @@ package edu.bu.analytics;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.FinhubResponse;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -132,16 +129,14 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
    * @param symbol
    * @return a string representing the average volume per second for the given symbol
    */
-  public String averageVolumePerSecond(String symbol) throws UnknownSymbolException {
+  public Double averageVolumePerSecond(String symbol) throws UnknownSymbolException {
 
     List<FinhubResponse> history = dataStore.getHistory(symbol);
     if (history == null || history.isEmpty()) {
-      return "No data for the requested symbol.";
+      throw new NoSuchElementException("No data for the requested symbol.");
     }
     long totalVolume = totalObservedVolume(symbol);
     long timeInterval = calculateTimeInterval(history);
-    double averageVolumePerSecond = (double) totalVolume / (timeInterval / 1000.0);
-
-    return String.format("%.2f", averageVolumePerSecond);
+    return (double) totalVolume / (timeInterval / 1000.0);
   }
 }

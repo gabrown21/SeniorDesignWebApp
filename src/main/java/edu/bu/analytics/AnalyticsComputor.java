@@ -47,5 +47,5 @@ public interface AnalyticsComputor {
    * @param symbol
    * @return string of average volume per second of given symbol
    */
-  public String averageVolumePerSecond(String symbol) throws UnknownSymbolException;
+  public Double averageVolumePerSecond(String symbol) throws UnknownSymbolException;
 }
