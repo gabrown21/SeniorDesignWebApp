@@ -3,10 +3,7 @@ package edu.bu.analytics;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.FinhubResponse;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,5 +103,40 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
       }
     }
     return mostActive;
+  }
+
+  /**
+   * Helper function for calculating time interval
+   *
+   * @param history
+   * @return maxTime- minTime
+   */
+  private long calculateTimeInterval(List<FinhubResponse> history) {
+    long minTime = history.stream().mapToLong(data -> data.msSinceEpoch).min().orElseThrow();
+
+    long maxTime = history.stream().mapToLong(data -> data.msSinceEpoch).max().orElseThrow();
+
+    long timeInterval = maxTime - minTime;
+    if (timeInterval == 0) {
+      return 1000;
+    }
+    return timeInterval;
+  }
+
+  /**
+   * Caclulates average trading colume per second on a given symbol
+   *
+   * @param symbol
+   * @return a string representing the average volume per second for the given symbol
+   */
+  public Double averageVolumePerSecond(String symbol) throws UnknownSymbolException {
+
+    List<FinhubResponse> history = dataStore.getHistory(symbol);
+    if (history == null || history.isEmpty()) {
+      throw new NoSuchElementException("No data for the requested symbol.");
+    }
+    long totalVolume = totalObservedVolume(symbol);
+    long timeInterval = calculateTimeInterval(history);
+    return (double) totalVolume / (timeInterval / 1000.0);
   }
 }

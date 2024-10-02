@@ -182,7 +182,32 @@ public class BasicAnalyticsComputorTest {
     assertTrue(analyticsComputor.knownSymbols().contains("AAPL"));
     assertTrue(analyticsComputor.knownSymbols().contains("TSLA"));
     assertTrue(analyticsComputor.knownSymbols().contains("NVDA"));
-    //Added in based on PR notes which furthers makes sure those are the only three
+    // Added in based on PR notes which furthers makes sure those are the only three
     assertEquals(3, analyticsComputor.knownSymbols().size());
+  }
+
+  @Test
+  public void averageVolumePerSecond_singleValue() throws UnknownSymbolException {
+    List<FinhubResponse> singleResponse =
+        ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 300));
+
+    dataStore.update(singleResponse);
+
+    Double response = analyticsComputor.averageVolumePerSecond("NVDA");
+    assertEquals(300.00, response);
+  }
+
+  @Test
+  public void averageVolumePerSecond_multipleValues() throws UnknownSymbolException {
+    dataStore.update(
+        ImmutableList.of(new FinhubResponse("NVDA", 134.12, TEST_TIME.toEpochMilli(), 300)));
+
+    dataStore.update(
+        ImmutableList.of(
+            new FinhubResponse(
+                "NVDA", 135.33, TEST_TIME.plus(400, ChronoUnit.SECONDS).toEpochMilli(), 500)));
+
+    Double response = analyticsComputor.averageVolumePerSecond("NVDA");
+    assertEquals(2.00, response);
   }
 }
