@@ -24,6 +24,12 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
 
     if (!validSymbol(symbol)) {
       Logger.info("The symbol is not valid:" + symbol);
+      String response = "This is an invalid symbol: " + symbol;
+      exchange.sendResponseHeaders(400, response.length());
+      try (OutputStream outputStream = exchange.getResponseBody()) {
+        outputStream.write(response.getBytes());
+      }
+      return;
     }
 
     String response;

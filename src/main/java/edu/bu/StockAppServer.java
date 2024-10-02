@@ -1,5 +1,6 @@
 package edu.bu;
 
+import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.analytics.CachingAnalyticsComputor;
 import edu.bu.data.DataStore;
 import edu.bu.data.InMemoryStore;
@@ -36,7 +37,7 @@ public class StockAppServer {
     DataStore store = new InMemoryStore();
 
     // set up analytics computations
-    CachingAnalyticsComputor cachingAnalyticsComputor = new CachingAnalyticsComputor(store);
+    AnalyticsComputor analyticsComputor = new CachingAnalyticsComputor(store);
 
     // register FinHub websocket listener, or mock based on argument to support local development
     StockUpdatesClient stockUpdatesClient =
@@ -47,8 +48,7 @@ public class StockAppServer {
     stockUpdatesClient.connect();
 
     // start web server
-    BasicWebServer webServer =
-        new BasicWebServer(store, cachingAnalyticsComputor, stockUpdatesClient);
+    BasicWebServer webServer = new BasicWebServer(store, analyticsComputor, stockUpdatesClient);
     webServer.start();
   }
 }
