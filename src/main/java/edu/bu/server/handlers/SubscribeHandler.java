@@ -3,6 +3,7 @@ package edu.bu.server.handlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.utilities.SymbolValidator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class SubscribeHandler implements HttpHandler {
   public void handle(HttpExchange exchange) throws IOException {
     String[] requestURLParts = exchange.getRequestURI().getRawPath().split("/");
     String symbol = requestURLParts[requestURLParts.length - 1];
-    if (!validSymbol(symbol)) {
+    if (!SymbolValidator.validSymbol(symbol)) {
       handleInvalidSymbol(exchange, symbol);
       return;
     }
@@ -75,28 +76,5 @@ public class SubscribeHandler implements HttpHandler {
     try (OutputStream outputStream = exchange.getResponseBody()) {
       outputStream.write(response.getBytes());
     }
-  }
-
-  /**
-   * Helper function to ensure that the symbol passed in is valid
-   *
-   * @param symbol
-   * @return true if symbol is valid
-   */
-  public boolean validSymbol(String symbol) {
-    if (symbol == null) {
-      return false;
-    }
-
-    if (symbol.isEmpty() || symbol.length() > 5) {
-      return false;
-    }
-
-    for (char ch : symbol.toCharArray()) {
-      if (!Character.isLetterOrDigit(ch)) {
-        return false;
-      }
-    }
-    return true;
   }
 }
