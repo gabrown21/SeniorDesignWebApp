@@ -7,7 +7,9 @@ import edu.bu.data.InMemoryStore;
 import edu.bu.finhub.FinHubWebSocketClient;
 import edu.bu.finhub.MockFinhubClient;
 import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.metrics.MetricsTracker;
 import edu.bu.server.BasicWebServer;
+import edu.bu.server.MetricsWebServer;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -50,5 +52,9 @@ public class StockAppServer {
     // start web server
     BasicWebServer webServer = new BasicWebServer(store, analyticsComputor, stockUpdatesClient);
     webServer.start();
+
+    MetricsTracker metricsTracker = new MetricsTracker();
+    MetricsWebServer metricsWebServer = new MetricsWebServer(metricsTracker);
+    metricsWebServer.start();
   }
 }
