@@ -58,4 +58,11 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
     String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbol + "\"}";
     send(message);
   }
+
+  @Override
+  public void removeSymbol(String symbol) {
+    Logger.info("Unsubscribing from updates for symbol: {}", symbol);
+    String message = "{\"type\":\"unsubscribe\",\"symbol\":\"" + symbol + "\"}";
+    send(message);
+  }
 }

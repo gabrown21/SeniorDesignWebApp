@@ -47,6 +47,9 @@ public class BasicWebServer {
     server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient, subscribedSymbols));
 
     server.createContext("/subscribed-symbols", new SubscribedSymbolsHandler(subscribedSymbols));
+
+    server.createContext(
+        "/unsubscribe", new UnsubscribeHandler(stockUpdatesClient, subscribedSymbols));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

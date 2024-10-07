@@ -9,4 +9,6 @@ public interface StockUpdatesClient {
   void connect();
 
   public void addSymbol(String symbol);
+
+  public void removeSymbol(String symbol);
 }

@@ -118,6 +118,7 @@ public class MockFinhubClient implements StockUpdatesClient {
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());
   }
 
+  @Override
   public void removeSymbol(String symbol) {
     subscribedSymbols.remove(symbol);
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());
