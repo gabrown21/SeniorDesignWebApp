@@ -131,6 +131,7 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
    */
   public Double averageVolumePerSecond(String symbol) throws UnknownSymbolException {
 
+
     List<FinhubResponse> history = dataStore.getHistory(symbol);
     if (history == null || history.isEmpty()) {
       throw new NoSuchElementException("No data for the requested symbol.");
