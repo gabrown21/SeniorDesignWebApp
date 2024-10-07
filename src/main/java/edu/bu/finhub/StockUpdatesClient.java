@@ -7,4 +7,6 @@ package edu.bu.finhub;
 public interface StockUpdatesClient {
   /** Connect to the server that will be providing this client with updates. */
   void connect();
+
+  public void addSymbol(String symbol);
 }

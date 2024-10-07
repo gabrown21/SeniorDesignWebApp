@@ -4,10 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.StockUpdatesClient;
-import edu.bu.server.handlers.AverageVolumePerSecondHandler;
-import edu.bu.server.handlers.MostActiveStockHandler;
-import edu.bu.server.handlers.PriceHandler;
-import edu.bu.server.handlers.SymbolListHandler;
+import edu.bu.server.handlers.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import org.tinylog.Logger;
@@ -42,6 +39,8 @@ public class BasicWebServer {
     server.createContext("/mostactive", new MostActiveStockHandler(analyticsComputor));
 
     server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
+
+    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

@@ -112,6 +112,7 @@ public class MockFinhubClient implements StockUpdatesClient {
     return MS_BETWEEN_CALLS_DEFAULT;
   }
 
+  @Override
   public void addSymbol(String symbol) {
     subscribedSymbols.add(symbol);
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());

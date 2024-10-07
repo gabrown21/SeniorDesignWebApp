@@ -25,9 +25,7 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
-    Logger.info("Registering for AAPL and TSLA");
-    send("{\"type\":\"subscribe\",\"symbol\":\"AAPL\"}");
-    send("{\"type\":\"subscribe\",\"symbol\":\"TSLA\"}");
+    Logger.info("WebSocket connection opened, waiting for subscriptions.");
   }
 
   @Override
@@ -52,5 +50,12 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   public void connect() {
     Logger.info("Starting WebSocket based FinHub client");
     super.connect();
+  }
+
+  @Override
+  public void addSymbol(String symbol) {
+    Logger.info("Subscribing to updates for symbol: {}", symbol);
+    String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbol + "\"}";
+    send(message);
   }
 }
