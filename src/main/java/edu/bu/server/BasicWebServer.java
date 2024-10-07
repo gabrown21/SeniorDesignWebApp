@@ -7,6 +7,8 @@ import edu.bu.finhub.StockUpdatesClient;
 import edu.bu.server.handlers.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import org.tinylog.Logger;
 
 /**
@@ -17,12 +19,14 @@ public class BasicWebServer {
   final DataStore store;
   final AnalyticsComputor analyticsComputor;
   final StockUpdatesClient stockUpdatesClient;
+  private final Map<String, Boolean> subscribedSymbols;
 
   public BasicWebServer(
       DataStore store, AnalyticsComputor analyticsComputor, StockUpdatesClient stockUpdatesClient) {
     this.store = store;
     this.analyticsComputor = analyticsComputor;
     this.stockUpdatesClient = stockUpdatesClient;
+    this.subscribedSymbols = new HashMap<>();
   }
 
   public void start() throws IOException {
@@ -40,7 +44,9 @@ public class BasicWebServer {
 
     server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
 
-    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient));
+    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient, subscribedSymbols));
+
+    server.createContext("/subscribed-symbols", new SubscribedSymbolsHandler(subscribedSymbols));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();
