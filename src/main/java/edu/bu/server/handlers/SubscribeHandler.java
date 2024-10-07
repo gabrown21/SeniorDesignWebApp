@@ -56,7 +56,8 @@ public class SubscribeHandler implements HttpHandler {
   private void handleSubscriptionLimit(HttpExchange exchange, String symbol) throws IOException {
     Logger.info("Subscription limit reached for symbol: " + symbol);
     String response =
-        symbol + " cannot be subscribed to because the server is at 10 subscriptions which is the limit.";
+        symbol
+            + " cannot be subscribed to because the server is at 10 subscriptions which is the limit.";
     sendResponse(exchange, response, 409);
   }
 
