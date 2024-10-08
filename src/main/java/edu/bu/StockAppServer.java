@@ -51,7 +51,8 @@ public class StockAppServer {
     stockUpdatesClient.connect();
 
     // start web server
-    BasicWebServer webServer = new BasicWebServer(store, analyticsComputor, stockUpdatesClient);
+    BasicWebServer webServer =
+        new BasicWebServer(store, analyticsComputor, stockUpdatesClient, metricsTracker);
     webServer.start();
 
     MetricsWebServer metricsWebServer = new MetricsWebServer(metricsTracker);

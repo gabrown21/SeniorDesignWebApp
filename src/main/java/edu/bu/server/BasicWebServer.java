@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.metrics.MetricsTracker;
 import edu.bu.server.handlers.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,14 +20,19 @@ public class BasicWebServer {
   final DataStore store;
   final AnalyticsComputor analyticsComputor;
   final StockUpdatesClient stockUpdatesClient;
+  final MetricsTracker metricsTracker;
   private final Map<String, Boolean> subscribedSymbols;
 
   public BasicWebServer(
-      DataStore store, AnalyticsComputor analyticsComputor, StockUpdatesClient stockUpdatesClient) {
+      DataStore store,
+      AnalyticsComputor analyticsComputor,
+      StockUpdatesClient stockUpdatesClient,
+      MetricsTracker metricsTracker) {
     this.store = store;
     this.analyticsComputor = analyticsComputor;
     this.stockUpdatesClient = stockUpdatesClient;
     this.subscribedSymbols = new HashMap<>();
+    this.metricsTracker = metricsTracker;
   }
 
   public void start() throws IOException {
@@ -34,7 +40,7 @@ public class BasicWebServer {
     HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
     // Create handler for price requests for individual symbols
-    server.createContext("/price", new PriceHandler(analyticsComputor));
+    server.createContext("/price", new PriceHandler(analyticsComputor, metricsTracker));
 
     // Create handler for listing of all known symbols
     server.createContext("/symbols", new SymbolListHandler(analyticsComputor));

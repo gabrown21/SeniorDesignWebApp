@@ -41,4 +41,33 @@ class MetricsTrackerTest {
     String expectedOutput = "Updates-volume:\nNVDA : 3\nTSLA : 2\nAAPL : 1";
     assertEquals(expectedOutput, metricsTracker.getUpdatesVolume());
   }
+
+  @Test
+  void testRecordAndGetPriceVolume() {
+    metricsTracker.recordPriceRequest("AAPL");
+    metricsTracker.recordPriceRequest("AAPL");
+    metricsTracker.recordPriceRequest("TSLA");
+
+    String expectedOutput = "Price-volume:\nAAPL : 2\nTSLA : 1";
+    assertEquals(expectedOutput, metricsTracker.getPriceVolume());
+  }
+
+  @Test
+  void testNoPriceRequests() {
+    String expectedOutput = "Price-volume: No price requests received.";
+    assertEquals(expectedOutput, metricsTracker.getPriceVolume());
+  }
+
+  @Test
+  void testMultiplePriceRequestsSorting() {
+    metricsTracker.recordPriceRequest("NVDA");
+    metricsTracker.recordPriceRequest("NVDA");
+    metricsTracker.recordPriceRequest("TSLA");
+    metricsTracker.recordPriceRequest("AAPL");
+    metricsTracker.recordPriceRequest("TSLA");
+    metricsTracker.recordPriceRequest("NVDA");
+
+    String expectedOutput = "Price-volume:\nNVDA : 3\nTSLA : 2\nAAPL : 1";
+    assertEquals(expectedOutput, metricsTracker.getPriceVolume());
+  }
 }
