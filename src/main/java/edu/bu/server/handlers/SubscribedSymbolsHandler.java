@@ -2,29 +2,29 @@ package edu.bu.server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import edu.bu.finhub.StockUpdatesClient;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 
 /** Handler for users to see what tickers they are subscribed to */
 public class SubscribedSymbolsHandler implements HttpHandler {
-  private final Map<String, Boolean> subscribedSymbols;
+  final StockUpdatesClient stockUpdatesClient;
 
-  public SubscribedSymbolsHandler(Map<String, Boolean> subscribedSymbols) {
-    this.subscribedSymbols = subscribedSymbols;
+  public SubscribedSymbolsHandler(StockUpdatesClient stockUpdatesClient) {
+    this.stockUpdatesClient = stockUpdatesClient;
   }
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     String response;
 
-    if (subscribedSymbols.isEmpty()) {
+    if (stockUpdatesClient.subscribedSymbols().isEmpty()) {
       response = "Subscribed to no symbols.";
     } else {
-      String symbolsList = String.join(", ", subscribedSymbols.keySet());
+      String symbolsList = String.join(", ", stockUpdatesClient.subscribedSymbols());
       response =
           "StockApp is subscribed to "
-              + subscribedSymbols.size()
+              + stockUpdatesClient.subscribedSymbols().size()
               + " symbols. Those symbols include: "
               + symbolsList;
     }

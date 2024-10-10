@@ -4,46 +4,55 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.sun.net.httpserver.HttpExchange;
+import edu.bu.finhub.StockUpdatesClient;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SubscribedSymbolsHandlerTest {
 
-  private Map<String, Boolean> subscribedSymbols;
   private SubscribedSymbolsHandler subscribedSymbolsHandler;
   private HttpExchange exchange;
+  private StockUpdatesClient stockUpdatesClient;
 
   @BeforeEach
   void setUp() {
-    subscribedSymbols = new HashMap<>();
-    subscribedSymbolsHandler = new SubscribedSymbolsHandler(subscribedSymbols);
+    stockUpdatesClient = mock(StockUpdatesClient.class);
+    subscribedSymbolsHandler = new SubscribedSymbolsHandler(stockUpdatesClient);
     exchange = mock(HttpExchange.class);
   }
 
   @Test
   void testNoSymbolsSubscribed() throws Exception {
-    when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
+    Set<String> subscribedSymbols = new HashSet<>();
+    when(stockUpdatesClient.subscribedSymbols()).thenReturn(subscribedSymbols);
+    ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+    when(exchange.getResponseBody()).thenReturn(responseStream);
 
     subscribedSymbolsHandler.handle(exchange);
+
     String expectedResponse = "Subscribed to no symbols.";
     verify(exchange).sendResponseHeaders(200, expectedResponse.length());
-    assertEquals(expectedResponse, exchange.getResponseBody().toString());
+    assertEquals(expectedResponse, responseStream.toString());
   }
 
   @Test
   void testSymbolsSubscribed() throws Exception {
-    subscribedSymbols.put("AAPL", true);
-    subscribedSymbols.put("TSLA", true);
+    Set<String> subscribedSymbols = new HashSet<>();
+    subscribedSymbols.add("AAPL");
+    subscribedSymbols.add("TSLA");
+    when(stockUpdatesClient.subscribedSymbols()).thenReturn(subscribedSymbols);
 
-    when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
+    ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+    when(exchange.getResponseBody()).thenReturn(responseStream);
 
     subscribedSymbolsHandler.handle(exchange);
+
     String expectedResponse =
         "StockApp is subscribed to 2 symbols. Those symbols include: AAPL, TSLA";
     verify(exchange).sendResponseHeaders(200, expectedResponse.length());
-    assertEquals(expectedResponse, exchange.getResponseBody().toString());
+    assertEquals(expectedResponse, responseStream.toString());
   }
 }

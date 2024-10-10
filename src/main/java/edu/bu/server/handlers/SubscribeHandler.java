@@ -6,19 +6,15 @@ import edu.bu.finhub.StockUpdatesClient;
 import edu.bu.utilities.SymbolValidator;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 import org.tinylog.Logger;
 
 /** Handler for users to subscribe to a ticker symbol */
 public class SubscribeHandler implements HttpHandler {
   private final StockUpdatesClient stockUpdatesClient;
-  private final Map<String, Boolean> subscribedSymbols;
   private static final int MAX_SUBSCRIPTIONS = 10;
 
-  public SubscribeHandler(
-      StockUpdatesClient stockUpdatesClient, Map<String, Boolean> subscribedSymbols) {
+  public SubscribeHandler(StockUpdatesClient stockUpdatesClient) {
     this.stockUpdatesClient = stockUpdatesClient;
-    this.subscribedSymbols = subscribedSymbols;
   }
 
   @Override
@@ -29,16 +25,15 @@ public class SubscribeHandler implements HttpHandler {
       handleInvalidSymbol(exchange, symbol);
       return;
     }
-    if (subscribedSymbols.containsKey(symbol)) {
+    if (stockUpdatesClient.subscribedSymbols().contains(symbol)) {
       handleAlreadyRegistered(exchange, symbol);
       return;
     }
 
-    if (subscribedSymbols.size() >= MAX_SUBSCRIPTIONS) {
+    if (stockUpdatesClient.subscribedSymbols().size() >= MAX_SUBSCRIPTIONS) {
       handleSubscriptionLimit(exchange, symbol);
       return;
     }
-    subscribedSymbols.put(symbol, true);
     stockUpdatesClient.addSymbol(symbol);
     handleSuccessfulSubscription(exchange, symbol);
   }

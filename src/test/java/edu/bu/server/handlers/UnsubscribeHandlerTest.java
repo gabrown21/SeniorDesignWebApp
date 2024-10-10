@@ -6,22 +6,20 @@ import static org.mockito.Mockito.*;
 import com.sun.net.httpserver.HttpExchange;
 import edu.bu.finhub.StockUpdatesClient;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class UnsubscribeHandlerTest {
-  private Map<String, Boolean> subscribedSymbols;
   private StockUpdatesClient stockUpdatesClient;
   private UnsubscribeHandler unsubscribeHandler;
   private HttpExchange exchange;
 
   @BeforeEach
   void setUp() {
-    subscribedSymbols = new HashMap<>();
     stockUpdatesClient = mock(StockUpdatesClient.class);
-    unsubscribeHandler = new UnsubscribeHandler(stockUpdatesClient, subscribedSymbols);
+    unsubscribeHandler = new UnsubscribeHandler(stockUpdatesClient);
     exchange = mock(HttpExchange.class);
   }
 
@@ -49,15 +47,27 @@ class UnsubscribeHandlerTest {
 
   @Test
   void testUnsubscribeMultipleSymbols() throws Exception {
-    subscribedSymbols.put("AAPL", true);
-    subscribedSymbols.put("TSLA", true);
+    Set<String> subscribedSymbols = new HashSet<>();
+    subscribedSymbols.add("AAPL");
+    subscribedSymbols.add("TSLA");
+    when(stockUpdatesClient.subscribedSymbols()).thenReturn(subscribedSymbols);
+
+    doAnswer(
+            invocation -> {
+              String symbol = invocation.getArgument(0);
+              subscribedSymbols.remove(symbol);
+              return null;
+            })
+        .when(stockUpdatesClient)
+        .removeSymbol(anyString());
 
     when(exchange.getRequestURI()).thenReturn(new java.net.URI("/unsubscribe/AAPL"));
     when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
-    unsubscribeHandler.handle(exchange);
-    assertFalse(subscribedSymbols.containsKey("AAPL"));
-    verify(stockUpdatesClient).removeSymbol("AAPL");
 
+    unsubscribeHandler.handle(exchange);
+
+    assertFalse(subscribedSymbols.contains("AAPL"));
+    verify(stockUpdatesClient).removeSymbol("AAPL");
     String expectedResponseAAPL = "You are now unsubscribed from updates for AAPL.";
     verify(exchange).sendResponseHeaders(200, expectedResponseAAPL.length());
 
@@ -65,12 +75,10 @@ class UnsubscribeHandlerTest {
 
     when(exchange.getRequestURI()).thenReturn(new java.net.URI("/unsubscribe/TSLA"));
     when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
-
     unsubscribeHandler.handle(exchange);
 
-    assertFalse(subscribedSymbols.containsKey("TSLA"));
+    assertFalse(subscribedSymbols.contains("TSLA"));
     verify(stockUpdatesClient).removeSymbol("TSLA");
-
     String expectedResponseTSLA = "You are now unsubscribed from updates for TSLA.";
     verify(exchange).sendResponseHeaders(200, expectedResponseTSLA.length());
   }

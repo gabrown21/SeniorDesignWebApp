@@ -4,7 +4,8 @@ import edu.bu.data.DataStore;
 import edu.bu.metrics.MetricsTracker;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.tinylog.Logger;
@@ -17,11 +18,12 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   final DataStore store;
   final FinhubParser parser;
   private final MetricsTracker metricsTracker;
+  final Set<String> subscribedSymbols;
 
   public FinHubWebSocketClient(String serverUri, DataStore store, MetricsTracker metricsTracker)
       throws URISyntaxException {
     super(new URI(serverUri));
-
+    this.subscribedSymbols = new ConcurrentSkipListSet<>();
     this.store = store;
     this.parser = new FinhubParser();
     this.metricsTracker = metricsTracker;
@@ -61,6 +63,7 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   @Override
   public void addSymbol(String symbol) {
     Logger.info("Subscribing to updates for symbol: {}", symbol);
+    subscribedSymbols.add(symbol);
     String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbol + "\"}";
     send(message);
   }
@@ -68,7 +71,13 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   @Override
   public void removeSymbol(String symbol) {
     Logger.info("Unsubscribing from updates for symbol: {}", symbol);
+    subscribedSymbols.remove(symbol);
     String message = "{\"type\":\"unsubscribe\",\"symbol\":\"" + symbol + "\"}";
     send(message);
+  }
+
+  @Override
+  public Set<String> subscribedSymbols() {
+    return Collections.unmodifiableSet(subscribedSymbols);
   }
 }

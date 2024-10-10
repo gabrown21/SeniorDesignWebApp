@@ -50,12 +50,11 @@ public class BasicWebServer {
 
     server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
 
-    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient, subscribedSymbols));
+    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient));
 
-    server.createContext("/subscribed-symbols", new SubscribedSymbolsHandler(subscribedSymbols));
+    server.createContext("/subscribed-symbols", new SubscribedSymbolsHandler(stockUpdatesClient));
 
-    server.createContext(
-        "/unsubscribe", new UnsubscribeHandler(stockUpdatesClient, subscribedSymbols));
+    server.createContext("/unsubscribe", new UnsubscribeHandler(stockUpdatesClient));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

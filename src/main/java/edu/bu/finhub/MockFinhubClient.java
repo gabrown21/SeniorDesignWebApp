@@ -51,7 +51,6 @@ public class MockFinhubClient implements StockUpdatesClient {
     this.store = store;
     this.arguments = arguments;
     this.metricsTracker = metricsTracker;
-
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
 
     // start with some subscribed symbols in deterministic order to support tests that won't modify
@@ -127,6 +126,7 @@ public class MockFinhubClient implements StockUpdatesClient {
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());
   }
 
+  @Override
   public Set<String> subscribedSymbols() {
     return Collections.unmodifiableSet(subscribedSymbols);
   }

@@ -6,18 +6,14 @@ import edu.bu.finhub.StockUpdatesClient;
 import edu.bu.utilities.SymbolValidator;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 import org.tinylog.Logger;
 
 /** Handler for users to unsubscribe from a ticker symbol */
 public class UnsubscribeHandler implements HttpHandler {
   private final StockUpdatesClient stockUpdatesClient;
-  private final Map<String, Boolean> subscribedSymbols;
 
-  public UnsubscribeHandler(
-      StockUpdatesClient stockUpdatesClient, Map<String, Boolean> subscribedSymbols) {
+  public UnsubscribeHandler(StockUpdatesClient stockUpdatesClient) {
     this.stockUpdatesClient = stockUpdatesClient;
-    this.subscribedSymbols = subscribedSymbols;
   }
 
   @Override
@@ -30,12 +26,11 @@ public class UnsubscribeHandler implements HttpHandler {
       return;
     }
 
-    if (!subscribedSymbols.containsKey(symbol)) {
+    if (!stockUpdatesClient.subscribedSymbols().contains(symbol)) {
       handleNotSubscribed(exchange, symbol);
       return;
     }
 
-    subscribedSymbols.remove(symbol);
     stockUpdatesClient.removeSymbol(symbol);
     handleSuccessfulUnsubscription(exchange, symbol);
   }
