@@ -1,9 +1,11 @@
 package edu.bu.finhub;
 
 import edu.bu.data.DataStore;
+import edu.bu.metrics.MetricsTracker;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.tinylog.Logger;
@@ -15,26 +17,30 @@ import org.tinylog.Logger;
 public class FinHubWebSocketClient extends WebSocketClient implements StockUpdatesClient {
   final DataStore store;
   final FinhubParser parser;
+  private final MetricsTracker metricsTracker;
+  final Set<String> subscribedSymbols;
 
-  public FinHubWebSocketClient(String serverUri, DataStore store) throws URISyntaxException {
+  public FinHubWebSocketClient(String serverUri, DataStore store, MetricsTracker metricsTracker)
+      throws URISyntaxException {
     super(new URI(serverUri));
-
+    this.subscribedSymbols = new ConcurrentSkipListSet<>();
     this.store = store;
     this.parser = new FinhubParser();
+    this.metricsTracker = metricsTracker;
   }
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
-    Logger.info("Registering for AAPL and TSLA");
-    send("{\"type\":\"subscribe\",\"symbol\":\"AAPL\"}");
-    send("{\"type\":\"subscribe\",\"symbol\":\"TSLA\"}");
+    Logger.info("WebSocket connection opened, waiting for subscriptions.");
   }
 
   @Override
   public void onMessage(String message) {
     Logger.info("Received FinHub message {}", message);
     List<FinhubResponse> response = parser.parse(message);
-
+    for (FinhubResponse r : response) {
+      metricsTracker.recordUpdate(r.symbol);
+    }
     store.update(response);
   }
 
@@ -52,5 +58,26 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   public void connect() {
     Logger.info("Starting WebSocket based FinHub client");
     super.connect();
+  }
+
+  @Override
+  public void addSymbol(String symbol) {
+    Logger.info("Subscribing to updates for symbol: {}", symbol);
+    subscribedSymbols.add(symbol);
+    String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbol + "\"}";
+    send(message);
+  }
+
+  @Override
+  public void removeSymbol(String symbol) {
+    Logger.info("Unsubscribing from updates for symbol: {}", symbol);
+    subscribedSymbols.remove(symbol);
+    String message = "{\"type\":\"unsubscribe\",\"symbol\":\"" + symbol + "\"}";
+    send(message);
+  }
+
+  @Override
+  public Set<String> subscribedSymbols() {
+    return Collections.unmodifiableSet(subscribedSymbols);
   }
 }

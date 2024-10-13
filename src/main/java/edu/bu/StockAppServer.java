@@ -7,7 +7,9 @@ import edu.bu.data.InMemoryStore;
 import edu.bu.finhub.FinHubWebSocketClient;
 import edu.bu.finhub.MockFinhubClient;
 import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.metrics.MetricsTracker;
 import edu.bu.server.BasicWebServer;
+import edu.bu.server.MetricsWebServer;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -35,6 +37,7 @@ public class StockAppServer {
 
     // set up store
     DataStore store = new InMemoryStore();
+    MetricsTracker metricsTracker = new MetricsTracker();
 
     // set up analytics computations
     AnalyticsComputor analyticsComputor = new CachingAnalyticsComputor(store);
@@ -42,13 +45,17 @@ public class StockAppServer {
     // register FinHub websocket listener, or mock based on argument to support local development
     StockUpdatesClient stockUpdatesClient =
         arguments.contains(MOCK_FINHUB_ARGUMENT)
-            ? new MockFinhubClient(store, arguments)
-            : new FinHubWebSocketClient(WEBHOOK_URI + "?token=" + API_TOKEN, store);
+            ? new MockFinhubClient(store, arguments, metricsTracker)
+            : new FinHubWebSocketClient(WEBHOOK_URI + "?token=" + API_TOKEN, store, metricsTracker);
 
     stockUpdatesClient.connect();
 
     // start web server
-    BasicWebServer webServer = new BasicWebServer(store, analyticsComputor, stockUpdatesClient);
+    BasicWebServer webServer =
+        new BasicWebServer(store, analyticsComputor, stockUpdatesClient, metricsTracker);
     webServer.start();
+
+    MetricsWebServer metricsWebServer = new MetricsWebServer(metricsTracker);
+    metricsWebServer.start();
   }
 }

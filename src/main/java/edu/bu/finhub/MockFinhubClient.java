@@ -2,6 +2,7 @@ package edu.bu.finhub;
 
 import com.google.common.collect.ImmutableList;
 import edu.bu.data.DataStore;
+import edu.bu.metrics.MetricsTracker;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -41,15 +42,15 @@ public class MockFinhubClient implements StockUpdatesClient {
   final Set<String> arguments;
 
   final Set<String> subscribedSymbols;
-
+  private final MetricsTracker metricsTracker;
   // these variables help us round-robin canned responses through known stock symbols
   List<String> symbolOrder;
   int responsesCount = 0;
 
-  public MockFinhubClient(DataStore store, Set<String> arguments) {
+  public MockFinhubClient(DataStore store, Set<String> arguments, MetricsTracker metricsTracker) {
     this.store = store;
     this.arguments = arguments;
-
+    this.metricsTracker = metricsTracker;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
 
     // start with some subscribed symbols in deterministic order to support tests that won't modify
@@ -85,6 +86,7 @@ public class MockFinhubClient implements StockUpdatesClient {
                           cannedResponse.volume);
 
                   Logger.info("processing mock response: " + actualResponse);
+                  metricsTracker.recordUpdate(nextSymbol);
                   store.update(ImmutableList.of(actualResponse));
 
                   responsesCount++;
@@ -112,16 +114,19 @@ public class MockFinhubClient implements StockUpdatesClient {
     return MS_BETWEEN_CALLS_DEFAULT;
   }
 
+  @Override
   public void addSymbol(String symbol) {
     subscribedSymbols.add(symbol);
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());
   }
 
+  @Override
   public void removeSymbol(String symbol) {
     subscribedSymbols.remove(symbol);
     symbolOrder = subscribedSymbols.stream().collect(Collectors.toList());
   }
 
+  @Override
   public Set<String> subscribedSymbols() {
     return Collections.unmodifiableSet(subscribedSymbols);
   }
