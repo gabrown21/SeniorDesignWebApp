@@ -1,6 +1,7 @@
 package edu.bu.server.handlers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.analytics.BasicAnalyticsComputor;
