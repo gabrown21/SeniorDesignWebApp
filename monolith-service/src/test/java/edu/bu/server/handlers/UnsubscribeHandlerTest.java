@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
 class UnsubscribeHandlerTest {
   private StockUpdatesClient stockUpdatesClient;
@@ -31,7 +32,7 @@ class UnsubscribeHandlerTest {
 
     String expectedResponse = "This is a invalid symbol: INVALID@";
     verify(exchange).sendResponseHeaders(400, expectedResponse.length());
-    verify(stockUpdatesClient, never()).removeSymbol(anyString());
+    verify(stockUpdatesClient, never()).removeSymbol(ArgumentMatchers.anyString());
   }
 
   @Test
@@ -59,7 +60,7 @@ class UnsubscribeHandlerTest {
               return null;
             })
         .when(stockUpdatesClient)
-        .removeSymbol(anyString());
+        .removeSymbol(ArgumentMatchers.anyString());
 
     when(exchange.getRequestURI()).thenReturn(new java.net.URI("/unsubscribe/AAPL"));
     when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
