@@ -3,7 +3,6 @@ package edu.bu.server;
 import com.sun.net.httpserver.HttpServer;
 import edu.bu.analytics.AnalyticsComputor;
 import edu.bu.data.DataStore;
-import edu.bu.finhub.StockUpdatesClient;
 import edu.bu.metrics.MetricsTracker;
 import edu.bu.server.handlers.*;
 import java.io.IOException;
@@ -19,18 +18,13 @@ import org.tinylog.Logger;
 public class BasicWebServer {
   final DataStore store;
   final AnalyticsComputor analyticsComputor;
-  final StockUpdatesClient stockUpdatesClient;
   final MetricsTracker metricsTracker;
   private final Map<String, Boolean> subscribedSymbols;
 
   public BasicWebServer(
-      DataStore store,
-      AnalyticsComputor analyticsComputor,
-      StockUpdatesClient stockUpdatesClient,
-      MetricsTracker metricsTracker) {
+      DataStore store, AnalyticsComputor analyticsComputor, MetricsTracker metricsTracker) {
     this.store = store;
     this.analyticsComputor = analyticsComputor;
-    this.stockUpdatesClient = stockUpdatesClient;
     this.subscribedSymbols = new HashMap<>();
     this.metricsTracker = metricsTracker;
   }
@@ -42,19 +36,11 @@ public class BasicWebServer {
     // Create handler for price requests for individual symbols
     server.createContext("/price", new PriceHandler(analyticsComputor, metricsTracker));
 
-    // Create handler for listing of all known symbols
-    server.createContext("/symbols", new SymbolListHandler(analyticsComputor));
-
     // Create handler for most active stock api
     server.createContext("/mostactive", new MostActiveStockHandler(analyticsComputor));
 
     server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
 
-    server.createContext("/subscribe", new SubscribeHandler(stockUpdatesClient));
-
-    server.createContext("/subscribed-symbols", new SubscribedSymbolsHandler(stockUpdatesClient));
-
-    server.createContext("/unsubscribe", new UnsubscribeHandler(stockUpdatesClient));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

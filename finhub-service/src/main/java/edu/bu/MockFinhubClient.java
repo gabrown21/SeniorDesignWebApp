@@ -1,7 +1,6 @@
-package edu.bu.finhub;
+package edu.bu;
 
 import com.google.common.collect.ImmutableList;
-import edu.bu.data.DataStore;
 import edu.bu.metrics.MetricsTracker;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -38,7 +37,6 @@ public class MockFinhubClient implements StockUpdatesClient {
           new CannedResponse(19.0, 7),
           new CannedResponse(71.8, 30),
           new CannedResponse(43.1, 10));
-  final DataStore store;
   final Set<String> arguments;
 
   final Set<String> subscribedSymbols;
@@ -47,8 +45,7 @@ public class MockFinhubClient implements StockUpdatesClient {
   List<String> symbolOrder;
   int responsesCount = 0;
 
-  public MockFinhubClient(DataStore store, Set<String> arguments, MetricsTracker metricsTracker) {
-    this.store = store;
+  public MockFinhubClient(Set<String> arguments, MetricsTracker metricsTracker) {
     this.arguments = arguments;
     this.metricsTracker = metricsTracker;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
@@ -71,33 +68,31 @@ public class MockFinhubClient implements StockUpdatesClient {
 
               Instant responseTime = Instant.now();
 
-              for (CannedResponse cannedResponse : CANNED_RESPONSES) {
-                if (symbolOrder.isEmpty()) {
-                  Logger.warn(
-                      "Mock Finhub Client cannot emit a canned response because there are zero symbols registered.");
-                } else {
-                  String nextSymbol = symbolOrder.get(responsesCount % symbolOrder.size());
+              if (symbolOrder.isEmpty()) {
+                Logger.warn(
+                    "Mock Finhub Client cannot emit a canned response because there are zero symbols registered.");
+              } else {
+                String nextSymbol = symbolOrder.get(responsesCount % symbolOrder.size());
 
-                  FinhubResponse actualResponse =
-                      new FinhubResponse(
-                          nextSymbol,
-                          cannedResponse.price,
-                          responseTime.toEpochMilli(),
-                          cannedResponse.volume);
+                //                  FinhubResponse actualResponse =
+                //                      new FinhubResponse(
+                //                          nextSymbol,
+                //                          cannedResponse.price,
+                //                          responseTime.toEpochMilli(),
+                //                          cannedResponse.volume);
 
-                  Logger.info("processing mock response: " + actualResponse);
-                  metricsTracker.recordUpdate(nextSymbol);
-                  store.update(ImmutableList.of(actualResponse));
+                Logger.info("processing mock response: "); // got rid of actualResponse here
+                metricsTracker.recordUpdate(nextSymbol);
+                // Got rid of data store update here.
 
-                  responsesCount++;
-                  responseTime = responseTime.plus(1, ChronoUnit.SECONDS);
-                }
+                responsesCount++;
+                responseTime = responseTime.plus(1, ChronoUnit.SECONDS);
+              }
 
-                try {
-                  Thread.sleep(msBetweenCalls);
-                } catch (InterruptedException e) {
-                  throw new RuntimeException(e);
-                }
+              try {
+                Thread.sleep(msBetweenCalls);
+              } catch (InterruptedException e) {
+                throw new RuntimeException(e);
               }
             })
         .start();

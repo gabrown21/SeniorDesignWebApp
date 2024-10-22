@@ -1,8 +1,8 @@
-package edu.bu.server.handlers;
+package edu.bu.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.StockUpdatesClient;
 import java.io.IOException;
 import java.io.OutputStream;
 

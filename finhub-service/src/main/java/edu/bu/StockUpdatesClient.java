@@ -1,4 +1,4 @@
-package edu.bu.finhub;
+package edu.bu;
 
 import java.util.Set;
 

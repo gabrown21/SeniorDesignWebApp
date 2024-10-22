@@ -1,10 +1,11 @@
 package edu.bu.server.handlers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.sun.net.httpserver.HttpExchange;
-import edu.bu.finhub.StockUpdatesClient;
+import edu.bu.StockUpdatesClient;
+import edu.bu.handlers.SubscribeHandler;
 import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
