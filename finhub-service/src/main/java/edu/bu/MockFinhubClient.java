@@ -1,7 +1,10 @@
 package edu.bu;
 
 import com.google.common.collect.ImmutableList;
+import edu.bu.finhub.FinhubResponse;
+import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.metrics.MetricsTracker;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -19,6 +22,8 @@ import org.tinylog.Logger;
 public class MockFinhubClient implements StockUpdatesClient {
   static final String MS_BETWEEN_CALLS_ARGUMENT = "msBetweenCalls";
   static final long MS_BETWEEN_CALLS_DEFAULT = 5000;
+  private final EnqueueingFinhubResponseHandler enqueueHandler;
+  private String stringResponse;
   // the time of these responses is not used - this mock will generate timestamps mimicing the time
   // at which it is executed
   static final List<CannedResponse> CANNED_RESPONSES =
@@ -45,7 +50,11 @@ public class MockFinhubClient implements StockUpdatesClient {
   List<String> symbolOrder;
   int responsesCount = 0;
 
-  public MockFinhubClient(Set<String> arguments, MetricsTracker metricsTracker) {
+  public MockFinhubClient(
+      EnqueueingFinhubResponseHandler enqueueHandler,
+      Set<String> arguments,
+      MetricsTracker metricsTracker) {
+    this.enqueueHandler = enqueueHandler;
     this.arguments = arguments;
     this.metricsTracker = metricsTracker;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
@@ -73,14 +82,20 @@ public class MockFinhubClient implements StockUpdatesClient {
                     "Mock Finhub Client cannot emit a canned response because there are zero symbols registered.");
               } else {
                 String nextSymbol = symbolOrder.get(responsesCount % symbolOrder.size());
-
-                //                  FinhubResponse actualResponse =
-                //                      new FinhubResponse(
-                //                          nextSymbol,
-                //                          cannedResponse.price,
-                //                          responseTime.toEpochMilli(),
-                //                          cannedResponse.volume);
-
+                CannedResponse cannedResponse =
+                    CANNED_RESPONSES.get(responsesCount % CANNED_RESPONSES.size());
+                FinhubResponse actualResponse =
+                    new FinhubResponse(
+                        nextSymbol,
+                        cannedResponse.price,
+                        responseTime.toEpochMilli(),
+                        cannedResponse.volume);
+                try {
+                  stringResponse = actualResponse.toString();
+                  enqueueHandler.enqueue(stringResponse);
+                } catch (IOException e) {
+                  Logger.error("Failed to enqueue message: {}", e.getMessage());
+                }
                 Logger.info("processing mock response: "); // got rid of actualResponse here
                 metricsTracker.recordUpdate(nextSymbol);
                 // Got rid of data store update here.

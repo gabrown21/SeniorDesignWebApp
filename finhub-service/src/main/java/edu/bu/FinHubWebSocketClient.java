@@ -1,6 +1,8 @@
 package edu.bu;
 
+import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.metrics.MetricsTracker;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -15,11 +17,16 @@ import org.tinylog.Logger;
  */
 public class FinHubWebSocketClient extends WebSocketClient implements StockUpdatesClient {
   private final MetricsTracker metricsTracker;
+  private final EnqueueingFinhubResponseHandler enqueueHandler;
   final Set<String> subscribedSymbols;
 
-  public FinHubWebSocketClient(String serverUri, MetricsTracker metricsTracker)
+  public FinHubWebSocketClient(
+      String serverUri,
+      MetricsTracker metricsTracker,
+      EnqueueingFinhubResponseHandler enqueueHandler)
       throws URISyntaxException {
     super(new URI(serverUri));
+    this.enqueueHandler = enqueueHandler;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
     this.metricsTracker = metricsTracker;
   }
@@ -32,8 +39,11 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   @Override
   public void onMessage(String message) {
     Logger.info("Received FinHub message {}", message);
-    // deleted finhub parser stuff here for onMessage
-
+    try {
+      enqueueHandler.enqueue(message);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

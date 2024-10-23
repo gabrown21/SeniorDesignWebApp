@@ -20,17 +20,6 @@ test {
 	useJUnitPlatform()
 }
 
-task runServer(type: JavaExec) {
-	mainClass = 'edu.bu.StockAppServer'
-	classpath = sourceSets.main.runtimeClasspath
-}
-
-task runServerWithMockFinhubPreload(type: JavaExec) {
-	mainClass = 'edu.bu.StockAppServer'
-	classpath = sourceSets.main.runtimeClasspath
-	args = ["mockFinhub", "msBetweenCalls=10"]
-}
-
 task executeServerIntegrationTest(type: Test) {
 	useJUnitPlatform {
 		includeTags "IntegrationTest"
