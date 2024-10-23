@@ -36,6 +36,7 @@ public class BasicWebServer {
     // Create handler for price requests for individual symbols
     server.createContext("/price", new PriceHandler(analyticsComputor, metricsTracker));
 
+    server.createContext("/symbols", new SymbolListHandler(analyticsComputor));
     // Create handler for most active stock api
     server.createContext("/mostactive", new MostActiveStockHandler(analyticsComputor));
 

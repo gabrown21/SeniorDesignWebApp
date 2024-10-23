@@ -15,7 +15,10 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 
 }
-
+task runService(type: JavaExec) {
+	mainClass = 'edu.bu.StockAppServer'
+	classpath = sourceSets.main.runtimeClasspath
+}
 test {
 	useJUnitPlatform()
 }

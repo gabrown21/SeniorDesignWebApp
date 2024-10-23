@@ -1,4 +1,4 @@
-package edu.bu.handlers;
+package edu.bu.server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
