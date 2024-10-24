@@ -19,14 +19,14 @@ echo "Starting Monolith Service in a new process"
 gradle monolith-service:runService &
 monolithServicePid=$!
 echo "Monolith Service PID is $monolithServicePid"
-sleep 80
+sleep 15
 
 echo "Waiting for services to come up"
 
 echo "Starting server integration tests"
 gradle executeServerIntegrationTest
 
-sleep 5
+sleep 2
 
 echo "Stopping all services"
 kill -9 $queueServicePid
