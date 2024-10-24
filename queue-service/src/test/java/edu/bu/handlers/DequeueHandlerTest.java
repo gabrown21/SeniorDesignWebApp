@@ -5,9 +5,9 @@ import static org.mockito.Mockito.*;
 
 import com.sun.net.httpserver.HttpExchange;
 import edu.bu.queue.QueueService;
+import edu.bu.queue.StockAppQueue;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,18 +16,20 @@ public class DequeueHandlerTest {
   private DequeueHandler dequeueHandler;
   private HttpExchange exchange;
   private OutputStream outputStream;
+  private StockAppQueue stockAppQueue;
 
   @BeforeEach
   void setUp() {
-    dequeueHandler = new DequeueHandler(new QueueService());
-    QueueService.queue = new ConcurrentLinkedQueue<>();
+    stockAppQueue = new StockAppQueue();
+    QueueService queueService = new QueueService(stockAppQueue);
+    dequeueHandler = new DequeueHandler(stockAppQueue);
     exchange = mock(HttpExchange.class);
     outputStream = mock(OutputStream.class);
   }
 
   @Test
   void testDequeueHandlerSuccess() throws IOException {
-    QueueService.queue.add("Test Message");
+    stockAppQueue.enqueue("Test Message");
     when(exchange.getRequestMethod()).thenReturn("GET");
     when(exchange.getResponseBody()).thenReturn(outputStream);
 
@@ -35,7 +37,7 @@ public class DequeueHandlerTest {
 
     verify(exchange).sendResponseHeaders(200, "Test Message".getBytes().length);
     verify(outputStream).write("Test Message".getBytes());
-    assertTrue(QueueService.queue.isEmpty());
+    assertTrue(stockAppQueue.dequeue() == null);
   }
 
   @Test

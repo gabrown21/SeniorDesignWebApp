@@ -3,6 +3,7 @@ package edu.bu;
 import edu.bu.data.DataStore;
 import edu.bu.finhub.FinhubParser;
 import edu.bu.finhub.FinhubResponse;
+import edu.bu.metrics.MetricsTracker;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,10 +22,12 @@ public class QueueReader {
   private final String queueServiceUrl;
   private final HttpClient httpClient;
   private final FinhubParser parser;
+  private final MetricsTracker metricsTracker;
 
-  public QueueReader(DataStore dataStore, String queueServiceUrl) {
+  public QueueReader(DataStore dataStore, String queueServiceUrl, MetricsTracker metricsTracker) {
     this.dataStore = dataStore;
     this.queueServiceUrl = queueServiceUrl;
+    this.metricsTracker = metricsTracker;
     this.httpClient = HttpClient.newHttpClient();
     this.parser = new FinhubParser();
   }
@@ -38,6 +41,7 @@ public class QueueReader {
       try {
         HttpResponse<String> response = sendDequeueRequest();
         processQueueResponse(response);
+
         Thread.sleep(3000);
       } catch (InterruptedException | IOException e) {
         Logger.error("QueueReader encountered an error: " + e.getMessage());
@@ -60,20 +64,20 @@ public class QueueReader {
       Logger.info("Received message from queue-service: " + message);
       List<FinhubResponse> parsedResponse = parser.parse(message);
       if (!parsedResponse.isEmpty()) {
-        dataStore.update(parsedResponse);
-        Logger.info("DataStore updated with new responses.");
+        handleParsedResponse(parsedResponse);
       } else {
         Logger.warn("Failed to parse message into FinnhubResponse.");
       }
     } else if (response.statusCode() == 204) {
       Logger.info("Queue is empty, waiting before polling again...");
-      try {
-        Thread.sleep(3000);
-      } catch (Exception e) {
-        Logger.error("Unexpected error: " + e.getMessage());
-      }
     } else {
       Logger.error("Unexpected response from queue-service. Status: " + response.statusCode());
     }
+  }
+
+  private void handleParsedResponse(List<FinhubResponse> parsedResponse) {
+    dataStore.update(parsedResponse);
+    Logger.info("DataStore updated with new responses.");
+    parsedResponse.forEach(response -> metricsTracker.recordUpdate(response.symbol));
   }
 }

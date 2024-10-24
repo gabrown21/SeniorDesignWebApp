@@ -3,7 +3,7 @@ package edu.bu.handlers;
 import static org.mockito.Mockito.*;
 
 import com.sun.net.httpserver.HttpExchange;
-import edu.bu.queue.QueueService;
+import edu.bu.queue.StockAppQueue;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +14,12 @@ public class EnqueueHandlerTest {
   private EnqueueHandler enqueueHandler;
   private HttpExchange exchange;
   private OutputStream outputStream;
+  private StockAppQueue stockAppQueue;
 
   @BeforeEach
   void setUp() {
-    enqueueHandler = new EnqueueHandler(new QueueService());
+    stockAppQueue = new StockAppQueue();
+    enqueueHandler = new EnqueueHandler(stockAppQueue);
     exchange = mock(HttpExchange.class);
     outputStream = mock(OutputStream.class);
   }

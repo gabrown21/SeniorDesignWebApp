@@ -2,7 +2,7 @@ package edu.bu.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import edu.bu.queue.QueueService;
+import edu.bu.queue.StockAppQueue;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -10,10 +10,10 @@ import org.tinylog.Logger;
 
 /** This class processes PUT requests for enqueueing messages */
 public class EnqueueHandler implements HttpHandler {
-  private QueueService queueService;
+  private StockAppQueue stockAppQueue;
 
-  public EnqueueHandler(QueueService queueService) {
-    this.queueService = queueService;
+  public EnqueueHandler(StockAppQueue stockAppQueue) {
+    this.stockAppQueue = stockAppQueue;
   }
 
   @Override
@@ -21,7 +21,7 @@ public class EnqueueHandler implements HttpHandler {
     if ("PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
       String requestBody =
           new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-      queueService.enqueueMessage(requestBody);
+      stockAppQueue.enqueue(requestBody);
       Logger.info("Received and enqueued message: " + requestBody);
       String successMessage = "Message enqueued";
       exchange.sendResponseHeaders(200, successMessage.getBytes().length);

@@ -13,7 +13,6 @@ dependencies {
 	testImplementation platform('org.junit:junit-bom:5.10.0')
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	implementation project(':stock-app-shared')
-	implementation project(':monolith-service')
 }
 task runService(type: JavaExec) {
 	mainClass = 'edu.bu.StockAppServer'

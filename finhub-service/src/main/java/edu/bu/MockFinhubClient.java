@@ -3,7 +3,6 @@ package edu.bu;
 import com.google.common.collect.ImmutableList;
 import edu.bu.finhub.FinhubResponse;
 import edu.bu.handlers.EnqueueingFinhubResponseHandler;
-import edu.bu.metrics.MetricsTracker;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -45,18 +44,13 @@ public class MockFinhubClient implements StockUpdatesClient {
   final Set<String> arguments;
 
   final Set<String> subscribedSymbols;
-  private final MetricsTracker metricsTracker;
   // these variables help us round-robin canned responses through known stock symbols
   List<String> symbolOrder;
   int responsesCount = 0;
 
-  public MockFinhubClient(
-      EnqueueingFinhubResponseHandler enqueueHandler,
-      Set<String> arguments,
-      MetricsTracker metricsTracker) {
+  public MockFinhubClient(EnqueueingFinhubResponseHandler enqueueHandler, Set<String> arguments) {
     this.enqueueHandler = enqueueHandler;
     this.arguments = arguments;
-    this.metricsTracker = metricsTracker;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
 
     // start with some subscribed symbols in deterministic order to support tests that won't modify
@@ -76,38 +70,36 @@ public class MockFinhubClient implements StockUpdatesClient {
                   "Starting mock finhub client with " + msBetweenCalls + " ms between each call.");
 
               Instant responseTime = Instant.now();
+              for (CannedResponse cannedResponse : CANNED_RESPONSES) {
+                if (symbolOrder.isEmpty()) {
+                  Logger.warn(
+                      "Mock Finhub Client cannot emit a canned response because there are zero symbols registered.");
+                } else {
+                  String nextSymbol = symbolOrder.get(responsesCount % symbolOrder.size());
+                  FinhubResponse actualResponse =
+                      new FinhubResponse(
+                          nextSymbol,
+                          cannedResponse.price,
+                          responseTime.toEpochMilli(),
+                          cannedResponse.volume);
+                  try {
+                    stringResponse = actualResponse.toString();
+                    enqueueHandler.enqueue(stringResponse);
+                  } catch (IOException e) {
+                    Logger.error("Failed to enqueue message: {}", e.getMessage());
+                  }
+                  Logger.info("processing mock response: "); // got rid of actualResponse here
+                  // Got rid of data store update here.
 
-              if (symbolOrder.isEmpty()) {
-                Logger.warn(
-                    "Mock Finhub Client cannot emit a canned response because there are zero symbols registered.");
-              } else {
-                String nextSymbol = symbolOrder.get(responsesCount % symbolOrder.size());
-                CannedResponse cannedResponse =
-                    CANNED_RESPONSES.get(responsesCount % CANNED_RESPONSES.size());
-                FinhubResponse actualResponse =
-                    new FinhubResponse(
-                        nextSymbol,
-                        cannedResponse.price,
-                        responseTime.toEpochMilli(),
-                        cannedResponse.volume);
-                try {
-                  stringResponse = actualResponse.toString();
-                  enqueueHandler.enqueue(stringResponse);
-                } catch (IOException e) {
-                  Logger.error("Failed to enqueue message: {}", e.getMessage());
+                  responsesCount++;
+                  responseTime = responseTime.plus(1, ChronoUnit.SECONDS);
                 }
-                Logger.info("processing mock response: "); // got rid of actualResponse here
-                metricsTracker.recordUpdate(nextSymbol);
-                // Got rid of data store update here.
 
-                responsesCount++;
-                responseTime = responseTime.plus(1, ChronoUnit.SECONDS);
-              }
-
-              try {
-                Thread.sleep(msBetweenCalls);
-              } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                try {
+                  Thread.sleep(msBetweenCalls);
+                } catch (InterruptedException e) {
+                  throw new RuntimeException(e);
+                }
               }
             })
         .start();

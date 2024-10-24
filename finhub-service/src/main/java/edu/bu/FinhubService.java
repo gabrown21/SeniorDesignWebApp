@@ -5,7 +5,6 @@ import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.handlers.SubscribeHandler;
 import edu.bu.handlers.SubscribedSymbolsHandler;
 import edu.bu.handlers.UnsubscribeHandler;
-import edu.bu.metrics.MetricsTracker;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
@@ -21,16 +20,12 @@ public class FinhubService {
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
-    MetricsTracker metricsTracker = new MetricsTracker();
     StockUpdatesClient stockUpdatesClient =
         List.of(args).contains(MOCK_FINHUB_ARGUMENT)
             ? new MockFinhubClient(
-                new EnqueueingFinhubResponseHandler("http://localhost:8010"),
-                Set.of(args),
-                metricsTracker)
+                new EnqueueingFinhubResponseHandler("http://localhost:8010"), Set.of(args))
             : new FinHubWebSocketClient(
                 WEBHOOK_URI + "?token=" + API_TOKEN,
-                metricsTracker,
                 new EnqueueingFinhubResponseHandler("http://localhost:8010"));
 
     stockUpdatesClient.connect();

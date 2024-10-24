@@ -2,23 +2,23 @@ package edu.bu.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import edu.bu.queue.QueueService;
+import edu.bu.queue.StockAppQueue;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.tinylog.Logger;
 
 /** This class processes GET requests for dequeueing messages */
 public class DequeueHandler implements HttpHandler {
-  private QueueService queueService;
+  private StockAppQueue stockAppQueue;
 
-  public DequeueHandler(QueueService queueService) {
-    this.queueService = queueService;
+  public DequeueHandler(StockAppQueue stockAppQueue) {
+    this.stockAppQueue = stockAppQueue;
   }
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-      String message = queueService.dequeueMessage();
+      String message = stockAppQueue.dequeue();
 
       if (message != null) {
         exchange.sendResponseHeaders(200, message.getBytes().length);
