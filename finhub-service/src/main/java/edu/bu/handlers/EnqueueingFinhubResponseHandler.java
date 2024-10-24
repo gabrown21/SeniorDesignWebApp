@@ -1,13 +1,13 @@
 package edu.bu.handlers;
 
 import edu.bu.finhub.FinhubParser;
-import edu.bu.finhub.FinhubResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.tinylog.Logger;
@@ -22,15 +22,15 @@ public class EnqueueingFinhubResponseHandler {
   }
 
   public void enqueue(String finnhubResponse) throws IOException {
-    List<FinhubResponse> parsedResponses = parser.parse(finnhubResponse);
-    String jsonString = buildJsonString(parsedResponses);
-    Logger.info("Sending message to queue-service: " + jsonString);
+    JSONObject json = convertStringToJson(finnhubResponse);
+    String message = json.toString();
+    Logger.info("Sending message to queue-service: " + message);
     URL url = new URL(queueServiceUrl + "/enqueue");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("PUT");
     connection.setRequestProperty("Content-Type", "application/json");
     connection.setDoOutput(true);
-    byte[] input = jsonString.getBytes(StandardCharsets.UTF_8);
+    byte[] input = message.getBytes(StandardCharsets.UTF_8);
     try (OutputStream outputStream = connection.getOutputStream()) {
       outputStream.write(input, 0, input.length);
     }
@@ -41,20 +41,25 @@ public class EnqueueingFinhubResponseHandler {
     }
   }
 
-  private String buildJsonString(List<FinhubResponse> responses) {
-    JSONObject json = new JSONObject();
+  public JSONObject convertStringToJson(String responseString) {
+    Pattern pattern =
+        Pattern.compile("symbol='(.*?)', price=(.*?), msSinceEpoch=(.*?), volume=(.*?)\\}");
+    Matcher matcher = pattern.matcher(responseString);
+    JSONObject jsonObject = new JSONObject();
     JSONArray dataArray = new JSONArray();
-
-    for (FinhubResponse response : responses) {
+    if (matcher.find()) {
       JSONObject dataPoint = new JSONObject();
-      dataPoint.put("s", response.symbol);
-      dataPoint.put("p", response.price);
-      dataPoint.put("t", response.msSinceEpoch);
-      dataPoint.put("v", response.volume);
-      dataArray.add(dataPoint);
-    }
+      dataPoint.put("s", matcher.group(1));
+      dataPoint.put("p", Double.parseDouble(matcher.group(2)));
+      dataPoint.put("t", java.time.Instant.parse(matcher.group(3)).toEpochMilli());
+      dataPoint.put("v", Long.parseLong(matcher.group(4)));
 
-    json.put("data", dataArray);
-    return json.toString();
+      dataArray.add(dataPoint);
+    } else {
+      Logger.warn("Failed to parse input string into JSON");
+    }
+    jsonObject.put("data", dataArray);
+
+    return jsonObject;
   }
 }

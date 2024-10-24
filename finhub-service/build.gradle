@@ -26,7 +26,7 @@ task runServiceWithMockFinhub(type: JavaExec) {
 }
 
 task runServerWithMockFinhubPreload(type: JavaExec) {
-	mainClass = 'edu.bu.StockAppServer'
+	mainClass = 'edu.bu.FinhubService'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ["mockFinhub", "msBetweenCalls=10"]
 }
