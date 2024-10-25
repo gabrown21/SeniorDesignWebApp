@@ -34,26 +34,4 @@ public class EnqueueingFinhubResponseHandler {
       Logger.warn("Failed to enqueue message. Response Code: " + responseCode);
     }
   }
-
-  //  public JSONObject convertStringToJson(String responseString) {
-  //    Pattern pattern =
-  //        Pattern.compile("symbol='(.*?)', price=(.*?), msSinceEpoch=(.*?), volume=(.*?)\\}");
-  //    Matcher matcher = pattern.matcher(responseString);
-  //    JSONObject jsonObject = new JSONObject();
-  //    JSONArray dataArray = new JSONArray();
-  //    if (matcher.find()) {
-  //      JSONObject dataPoint = new JSONObject();
-  //      dataPoint.put("s", matcher.group(1));
-  //      dataPoint.put("p", Double.parseDouble(matcher.group(2)));
-  //      dataPoint.put("t", java.time.Instant.parse(matcher.group(3)).toEpochMilli());
-  //      dataPoint.put("v", Long.parseLong(matcher.group(4)));
-  //
-  //      dataArray.add(dataPoint);
-  //    } else {
-  //      Logger.warn("Failed to parse input string into JSON");
-  //    }
-  //    jsonObject.put("data", dataArray);
-  //
-  //    return jsonObject;
-  //  }
 }
