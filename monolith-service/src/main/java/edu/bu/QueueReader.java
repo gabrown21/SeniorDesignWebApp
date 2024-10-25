@@ -42,7 +42,7 @@ public class QueueReader {
         HttpResponse<String> response = sendDequeueRequest();
         processQueueResponse(response);
 
-        Thread.sleep(3000);
+        Thread.sleep(500);
       } catch (InterruptedException | IOException e) {
         Logger.error("QueueReader encountered an error: " + e.getMessage());
         break;
