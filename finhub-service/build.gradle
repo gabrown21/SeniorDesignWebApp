@@ -1,0 +1,36 @@
+plugins {
+	id 'java'
+}
+
+group = 'edu.bu'
+version = '1.0-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testImplementation platform('org.junit:junit-bom:5.10.0')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	implementation project(':stock-app-shared')
+}
+task runService(type: JavaExec) {
+	mainClass = 'edu.bu.StockAppServer'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
+task runServiceWithMockFinhub(type: JavaExec) {
+	mainClass = 'edu.bu.FinhubService'
+	classpath = sourceSets.main.runtimeClasspath
+	args = ['mockFinhub']
+}
+
+task runServerWithMockFinhubPreload(type: JavaExec) {
+	mainClass = 'edu.bu.FinhubService'
+	classpath = sourceSets.main.runtimeClasspath
+	args = ["mockFinhub", "msBetweenCalls=10"]
+}
+
+test {
+	useJUnitPlatform()
+}

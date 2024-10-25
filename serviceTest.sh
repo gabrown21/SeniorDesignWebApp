@@ -1,16 +1,34 @@
 #!/usr/bin/env bash
 clear
 
-echo "starting server in new process"
-gradle runServerWithMockFinhubPreload &
-serverPid=$!
-echo "server pid is $serverPid"
+echo "Starting Queue Service in a new process"
+gradle queue-service:runService &
+queueServicePid=$!
+echo "Queue Service PID is $queueServicePid"
 
-echo "waiting for server to come up"
 sleep 5
 
-echo "starting server test"
+echo "Starting Finnhub Service in a new process"
+gradle finhub-service:runServerWithMockFinhubPreload &
+finnhubServicePid=$!
+echo "Finnhub Service PID is $finnhubServicePid"
+
+sleep 5
+
+echo "Starting Monolith Service in a new process"
+gradle monolith-service:runService &
+monolithServicePid=$!
+echo "Monolith Service PID is $monolithServicePid"
+sleep 15
+
+echo "Waiting for services to come up"
+
+echo "Starting server integration tests"
 gradle executeServerIntegrationTest
 
-echo "stopping server"
-kill -9 $serverPid
+sleep 2
+
+echo "Stopping all services"
+kill -9 $queueServicePid
+kill -9 $finnhubServicePid
+kill -9 $monolithServicePid
