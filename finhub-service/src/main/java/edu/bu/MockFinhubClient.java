@@ -83,7 +83,7 @@ public class MockFinhubClient implements StockUpdatesClient {
                           responseTime.toEpochMilli(),
                           cannedResponse.volume);
                   try {
-                    stringResponse = actualResponse.toString();
+                    stringResponse = actualResponse.toJson();
                     enqueueHandler.enqueue(stringResponse);
                   } catch (IOException e) {
                     Logger.error("Failed to enqueue message: {}", e.getMessage());

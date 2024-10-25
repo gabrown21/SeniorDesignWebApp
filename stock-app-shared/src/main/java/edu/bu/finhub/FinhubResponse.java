@@ -33,4 +33,22 @@ public class FinhubResponse {
         + volume
         + '}';
   }
+
+  public String toJson() {
+    return "{"
+        + "\"data\":[{"
+        + "\"s\":\""
+        + symbol
+        + "\","
+        + "\"p\":"
+        + price
+        + ","
+        + "\"t\":"
+        + msSinceEpoch
+        + ","
+        + "\"v\":"
+        + volume
+        + "}]"
+        + "}";
+  }
 }
