@@ -13,7 +13,7 @@ dependencies {
 	implementation project(':stock-app-shared')
 	testImplementation platform('org.junit:junit-bom:5.10.0')
 	testImplementation 'org.junit.jupiter:junit-jupiter'
-
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 task runService(type: JavaExec) {
 	mainClass = 'edu.bu.StockAppServer'

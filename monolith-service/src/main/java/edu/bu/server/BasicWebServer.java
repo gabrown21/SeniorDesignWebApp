@@ -34,13 +34,16 @@ public class BasicWebServer {
     HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
     // Create handler for price requests for individual symbols
-    server.createContext("/price", new PriceHandler(analyticsComputor, metricsTracker));
+    server.createContext(
+        "/price", new CORSHandler(new PriceHandler(analyticsComputor, metricsTracker)));
 
-    server.createContext("/symbols", new SymbolListHandler(analyticsComputor));
+    server.createContext("/symbols", new CORSHandler(new SymbolListHandler(analyticsComputor)));
     // Create handler for most active stock api
-    server.createContext("/mostactive", new MostActiveStockHandler(analyticsComputor));
+    server.createContext(
+        "/mostactive", new CORSHandler(new MostActiveStockHandler(analyticsComputor)));
 
-    server.createContext("/averagevolume", new AverageVolumePerSecondHandler(analyticsComputor));
+    server.createContext(
+        "/averagevolume", new CORSHandler(new AverageVolumePerSecondHandler(analyticsComputor)));
 
     // Start the server
     server.setExecutor(null); // Use the default executor
