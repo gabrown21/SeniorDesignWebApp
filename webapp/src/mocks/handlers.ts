@@ -7,4 +7,10 @@ export const handlers = [
       symbols: ["AAPL"],
     })
   }),
+
+  http.get(`${API_URL}/most-active`, () => {
+    return HttpResponse.json({
+      mostActiveStock: "AAPL",
+    })
+  }),
 ]
