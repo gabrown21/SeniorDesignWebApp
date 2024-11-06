@@ -36,7 +36,7 @@ export const routes: RouteObject[] = [
           }
         },
         // Provide JSX to show if the data fails to load
-        errorElement: null,
+        errorElement: <div>Failed loading most-active stock</div>,
       },
       {
         path: "symbols",
@@ -45,7 +45,16 @@ export const routes: RouteObject[] = [
           // Fetch the most active symbol from the API
           // Convert the response to JSON
           // Return the most active symbol
-          return null
+          try {
+            const response = await fetch(`${API_URL}/symbols`);
+            if (!response.ok) {
+              throw new Error("Failed to fetch symbols");
+            }
+            const data = await response.json();
+            return data.symbols;
+          } catch (error) {
+            throw new Error("Failed to load symbols.\n "+ (error as Error).message);
+          }
         },
         // Provide JSX to show if the data fails to load
         errorElement: <div>Failed to load symbols</div>,
