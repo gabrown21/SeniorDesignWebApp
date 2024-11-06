@@ -4,6 +4,8 @@ import { MostActive } from "./MostActive"
 import { Symbols } from "./Symbols"
 import { Home } from "./Home"
 import { API_URL } from "./constants"
+import { Price } from "./Price"
+import {AverageVolume} from "./AverageVolume"
 
 // This object describes the structure of the app: its possible screens, parameters,
 // and data loading operations.
@@ -59,7 +61,28 @@ export const routes: RouteObject[] = [
         // Provide JSX to show if the data fails to load
         errorElement: <div>Failed to load symbols</div>,
         // Child routes can continue to be nested
-        children: [],
+        children: [
+          {
+            path: ":symbol/price",
+            element: <Price />,
+            loader: async ({ params }) => {
+              const response = await fetch(`${API_URL}/price/${params.symbol}`);
+              const data = await response.json();
+              return data.price;
+            },
+            errorElement: <div>Failed to load price.</div>,
+          },
+          {
+            path: ":symbol/averagevolume",
+            element: <AverageVolume />,
+            loader: async ({ params }) => {
+              const response = await fetch(`${API_URL}/averagevolume/${params.symbol}`);
+              const data = await response.json();
+              return data.averageVolume;
+            },
+            errorElement: <div>Failed to load average volume data.</div>,
+          }
+        ],
       },
     ],
   },
