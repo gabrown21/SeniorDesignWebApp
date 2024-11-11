@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 public class ServerIntegrationTest {
 
   HttpClient httpClient;
+  JSONParser parser = new JSONParser();
 
   @BeforeEach
   public void setUp() {
