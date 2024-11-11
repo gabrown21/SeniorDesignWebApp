@@ -4,7 +4,7 @@ import { test, expect, describe } from "vitest"
 import { routes } from "../routes";
 import { render, screen} from "@testing-library/react"
 
-describe("Price", () => {
+describe("Average Volume", () => {
     test("Displays the correct symbol and volume", async () => {
         const router = createMemoryRouter(routes, {
           initialEntries: ["/symbols/AAPL/averagevolume"],
@@ -21,7 +21,7 @@ describe("Price", () => {
 
       test("clicking Back returns to symbols", async () => {
         const router = createMemoryRouter(routes, {
-            initialEntries: ["/symbols/AAPL/price"],
+            initialEntries: ["/symbols/AAPL/averagevolume"],
           });
           render(<RouterProvider router={router} />);
       
