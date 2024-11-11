@@ -34,6 +34,13 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
       responseJson.put("averageVolumePerSecond", averageVolume);
     } catch (UnknownSymbolException e) {
       responseJson.put("error", e.getMessage());
+      String response = responseJson.toJSONString();
+      exchange.getResponseHeaders().add("Content-Type", "application/json");
+      exchange.sendResponseHeaders(404, response.length());
+      try (OutputStream outputStream = exchange.getResponseBody()) {
+        outputStream.write(response.getBytes());
+      }
+      return;
     }
     String response = responseJson.toJSONString();
     Logger.info("Handled average volume for {}, response: {}.", symbol, response);
