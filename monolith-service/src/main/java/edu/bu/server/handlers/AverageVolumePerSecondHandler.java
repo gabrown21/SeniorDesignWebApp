@@ -33,13 +33,7 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
       responseJson.put("symbol", symbol);
       responseJson.put("averageVolumePerSecond", averageVolume);
     } catch (UnknownSymbolException e) {
-      responseJson.put("error", e.getMessage());
-      String response = responseJson.toJSONString();
-      exchange.getResponseHeaders().add("Content-Type", "application/json");
-      exchange.sendResponseHeaders(404, response.length());
-      try (OutputStream outputStream = exchange.getResponseBody()) {
-        outputStream.write(response.getBytes());
-      }
+      handleUnknownSymbolException(exchange, e.getMessage());
       return;
     }
     String response = responseJson.toJSONString();
@@ -48,6 +42,18 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
     exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 
+    try (OutputStream outputStream = exchange.getResponseBody()) {
+      outputStream.write(response.getBytes());
+    }
+  }
+
+  private void handleUnknownSymbolException(HttpExchange exchange, String errorMessage)
+      throws IOException {
+    JSONObject responseJson = new JSONObject();
+    responseJson.put("error", errorMessage);
+    String response = responseJson.toJSONString();
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
+    exchange.sendResponseHeaders(404, response.length());
     try (OutputStream outputStream = exchange.getResponseBody()) {
       outputStream.write(response.getBytes());
     }
