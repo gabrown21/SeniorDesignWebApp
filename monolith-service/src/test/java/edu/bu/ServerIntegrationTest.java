@@ -55,7 +55,7 @@ public class ServerIntegrationTest {
     if (priceObj == null) {
       throw new IllegalArgumentException("currentPrice key is missing in the JSON response");
     }
-    double price = Double.parseDouble(rawResponse);
+    double price = Double.parseDouble(priceObj.toString());
     assertEquals(43.1, price, 0.01);
   }
 
@@ -70,7 +70,7 @@ public class ServerIntegrationTest {
     if (symbolObj == null) {
       throw new IllegalArgumentException("mostActiveStock key is missing in the JSON response");
     }
-    assertEquals("RIVN", rawResponse);
+    assertEquals("RIVN", symbolObj.toString());
   }
 
   String makeRequest(String url) throws URISyntaxException, IOException, InterruptedException {
