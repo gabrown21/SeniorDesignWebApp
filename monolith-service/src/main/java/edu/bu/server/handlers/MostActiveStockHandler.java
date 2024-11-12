@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import edu.bu.analytics.AnalyticsComputor;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.json.simple.JSONObject;
 
 /** Most active stock handler that inherits from HttpHandler */
 public class MostActiveStockHandler implements HttpHandler {
@@ -16,8 +17,12 @@ public class MostActiveStockHandler implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    String response = analyticsComputor.mostActiveStock() + "\n";
+    JSONObject responseJson = new JSONObject();
+    String mostActiveStock = analyticsComputor.mostActiveStock();
+    responseJson.put("mostActiveStock", mostActiveStock);
 
+    String response = responseJson.toJSONString();
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 
     OutputStream outputStream = null;

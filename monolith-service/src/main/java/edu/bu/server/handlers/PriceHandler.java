@@ -7,6 +7,7 @@ import edu.bu.analytics.UnknownSymbolException;
 import edu.bu.metrics.MetricsTracker;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.json.simple.JSONObject;
 import org.tinylog.Logger;
 
 /** Handler for price updates arriving via WebSocket callbacks from Finhub. */
@@ -26,16 +27,19 @@ public class PriceHandler implements HttpHandler {
     String symbol = requestURLParts[requestURLParts.length - 1];
 
     metricsTracker.recordPriceRequest(symbol);
-
-    String response;
+    JSONObject responseJson = new JSONObject();
     try {
-      response = analyticsComputor.currentPrice(symbol) + "\n";
+      double price = analyticsComputor.currentPrice(symbol);
+      responseJson.put("symbol", symbol);
+      responseJson.put("currentPrice", price);
     } catch (UnknownSymbolException e) {
-      response = e.getMessage() + "\n";
+      responseJson.put("error", e.getMessage());
     }
 
-    Logger.info("Handled price request for {}, responding with {}.", symbol, response);
+    Logger.info("Handled price request for {}, responding with {}.", symbol, responseJson);
 
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
+    String response = responseJson.toJSONString();
     exchange.sendResponseHeaders(200, response.length());
 
     OutputStream outputStream = null;

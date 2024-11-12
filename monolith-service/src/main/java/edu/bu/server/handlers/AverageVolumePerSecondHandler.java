@@ -7,6 +7,7 @@ import edu.bu.analytics.UnknownSymbolException;
 import edu.bu.utilities.SymbolValidator;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.json.simple.JSONObject;
 import org.tinylog.Logger;
 
 /** Handler for average volume per second. */
@@ -22,30 +23,56 @@ public class AverageVolumePerSecondHandler implements HttpHandler {
 
     String[] requestURLParts = exchange.getRequestURI().getRawPath().split("/");
     String symbol = requestURLParts[requestURLParts.length - 1];
-
-    if (!SymbolValidator.validSymbol(symbol)) {
-      Logger.info("The symbol is not valid:" + symbol);
-      String response = "This is an invalid symbol: " + symbol;
-      exchange.sendResponseHeaders(400, response.length());
-      try (OutputStream outputStream = exchange.getResponseBody()) {
-        outputStream.write(response.getBytes());
-      }
+    JSONObject responseJson = new JSONObject();
+    if (!validateSymbol(symbol, exchange)) {
       return;
     }
 
-    String response;
     try {
-      response = analyticsComputor.averageVolumePerSecond(symbol) + "\n";
+      double averageVolume = analyticsComputor.averageVolumePerSecond(symbol);
+      responseJson.put("symbol", symbol);
+      responseJson.put("averageVolumePerSecond", averageVolume);
     } catch (UnknownSymbolException e) {
-      response = e.getMessage();
+      handleUnknownSymbolException(exchange, e.getMessage());
+      return;
     }
-
+    String response = responseJson.toJSONString();
     Logger.info("Handled average volume for {}, response: {}.", symbol, response);
 
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 
     try (OutputStream outputStream = exchange.getResponseBody()) {
       outputStream.write(response.getBytes());
     }
+  }
+
+  private void handleUnknownSymbolException(HttpExchange exchange, String errorMessage)
+      throws IOException {
+    JSONObject responseJson = new JSONObject();
+    responseJson.put("error", errorMessage);
+    String response = responseJson.toJSONString();
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
+    exchange.sendResponseHeaders(404, response.length());
+    try (OutputStream outputStream = exchange.getResponseBody()) {
+      outputStream.write(response.getBytes());
+    }
+  }
+
+  private boolean validateSymbol(String symbol, HttpExchange exchange) throws IOException {
+    if (!SymbolValidator.validSymbol(symbol)) {
+      JSONObject responseJson = new JSONObject();
+      Logger.info("The symbol is not valid:" + symbol);
+      responseJson.put("error", "Invalid symbol: " + symbol);
+      String response = responseJson.toJSONString();
+      exchange.getResponseHeaders().add("Content-Type", "application/json");
+      exchange.sendResponseHeaders(400, response.length());
+
+      try (OutputStream outputStream = exchange.getResponseBody()) {
+        outputStream.write(response.getBytes());
+      }
+      return false;
+    }
+    return true;
   }
 }

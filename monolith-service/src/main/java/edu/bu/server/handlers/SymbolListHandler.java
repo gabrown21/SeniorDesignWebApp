@@ -5,7 +5,8 @@ import com.sun.net.httpserver.HttpHandler;
 import edu.bu.analytics.AnalyticsComputor;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.stream.Collectors;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /** Supports the symbols HTTP endpoint. */
 public class SymbolListHandler implements HttpHandler {
@@ -17,13 +18,17 @@ public class SymbolListHandler implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    String response =
-        analyticsComputor.knownSymbols().stream().collect(Collectors.joining(",")) + "\n";
+    JSONArray symbolsArray = new JSONArray();
+    symbolsArray.addAll(analyticsComputor.knownSymbols());
+    JSONObject responseJson = new JSONObject();
+    responseJson.put("symbols", symbolsArray);
 
+    String response = responseJson.toJSONString();
+
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 
     OutputStream outputStream = null;
-
     try {
       outputStream = exchange.getResponseBody();
       outputStream.write(response.getBytes());
