@@ -11,10 +11,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Implementation of SymbolsPersistence */
-public class SymbolsPersistenceImpl implements SymbolsPersistence {
+public class FileBasedSymbolsPersistenceImpl implements SymbolsPersistence {
   private static final Path STORAGE_DIRECTORY = Paths.get("symbol-storage");
 
-  public SymbolsPersistenceImpl() {
+  public FileBasedSymbolsPersistenceImpl() {
     try {
       if (!Files.exists(STORAGE_DIRECTORY)) {
         Files.createDirectories(STORAGE_DIRECTORY);

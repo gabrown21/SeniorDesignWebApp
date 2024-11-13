@@ -5,7 +5,7 @@ import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.handlers.SubscribeHandler;
 import edu.bu.handlers.SubscribedSymbolsHandler;
 import edu.bu.handlers.UnsubscribeHandler;
-import edu.bu.persistence.SymbolsPersistenceImpl;
+import edu.bu.persistence.FileBasedSymbolsPersistenceImpl;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
@@ -18,7 +18,8 @@ public class FinhubService {
   static final String MOCK_FINHUB_ARGUMENT = "mockFinhub";
   static final String WEBHOOK_URI = "wss://ws.finnhub.io";
   static final String API_TOKEN = "cq1vjm1r01ql95nces30cq1vjm1r01ql95nces3g";
-  static final SymbolsPersistenceImpl symbolsPersistence = new SymbolsPersistenceImpl();
+  static final FileBasedSymbolsPersistenceImpl symbolsPersistence =
+      new FileBasedSymbolsPersistenceImpl();
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
