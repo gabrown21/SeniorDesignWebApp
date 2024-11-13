@@ -62,7 +62,7 @@ public class MockFinhubClient implements StockUpdatesClient {
   }
 
   @Override
-  public void connect() {
+  public void init() {
     new Thread(
             () -> {
               long msBetweenCalls = parseMsBetweenCalls();

@@ -60,9 +60,13 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   }
 
   @Override
-  public void connect() {
+  public void init(){
     Logger.info("Starting WebSocket based FinHub client");
-    super.connect();
+    try {
+      super.connectBlocking();
+    } catch(InterruptedException e){
+      Logger.error("Connection interrupted : {}",e.getMessage());
+    }
   }
 
   @Override

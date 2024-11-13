@@ -31,7 +31,7 @@ public class FinhubService {
                 new EnqueueingFinhubResponseHandler("http://localhost:8010"),
                 symbolsPersistence);
 
-    stockUpdatesClient.connect();
+    stockUpdatesClient.init();
 
     // Start HTTP server for handling subscribe/unsubscribe requests
     HttpServer server = HttpServer.create(new InetSocketAddress(8004), 0);
