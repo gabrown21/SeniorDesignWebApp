@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import edu.bu.handlers.EnqueueingFinhubResponseHandler;
-import edu.bu.persistence.FileBasedSymbolsPersistenceImpl;
 import edu.bu.persistence.SQLiteSymbolPersistence;
 import edu.bu.persistence.SymbolsPersistence;
 import java.net.URISyntaxException;
