@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-/** NoOp Implenetation of SYmbolsPersistence */
+/** Implementation of SymbolsPersistence */
 public class SymbolsPersistenceImpl implements SymbolsPersistence {
   private static final Path STORAGE_DIRECTORY = Paths.get("symbol-storage");
 

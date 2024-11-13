@@ -30,6 +30,14 @@ task runServerWithMockFinhubPreload(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
 	args = ["mockFinhub", "msBetweenCalls=10"]
 }
+task executePersistenceIntegrationTest(type: Test) {
+	useJUnitPlatform {
+		includeTags "IntegrationTest"
+	}
+	testLogging {
+		showStandardStreams = true
+	}
+}
 
 test {
 	useJUnitPlatform()
