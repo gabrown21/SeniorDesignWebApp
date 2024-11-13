@@ -1,6 +1,7 @@
 package edu.bu;
 
 import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.persistence.SymbolsPersistence;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,13 +17,21 @@ import org.tinylog.Logger;
  */
 public class FinHubWebSocketClient extends WebSocketClient implements StockUpdatesClient {
   private final EnqueueingFinhubResponseHandler enqueueHandler;
+  private final SymbolsPersistence symbolsPersistence;
   final Set<String> subscribedSymbols;
 
-  public FinHubWebSocketClient(String serverUri, EnqueueingFinhubResponseHandler enqueueHandler)
+  public FinHubWebSocketClient(
+      String serverUri,
+      EnqueueingFinhubResponseHandler enqueueHandler,
+      SymbolsPersistence symbolsPersistence)
       throws URISyntaxException {
     super(new URI(serverUri));
     this.enqueueHandler = enqueueHandler;
+    this.symbolsPersistence = symbolsPersistence;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
+    symbolsPersistence
+        .readAll()
+        .forEach(storedSymbol -> subscribedSymbols.add(storedSymbol.symbol));
   }
 
   @Override
@@ -60,6 +69,7 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   public void addSymbol(String symbol) {
     Logger.info("Subscribing to updates for symbol: {}", symbol);
     subscribedSymbols.add(symbol);
+    symbolsPersistence.add(symbol);
     String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbol + "\"}";
     send(message);
   }
@@ -68,6 +78,7 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   public void removeSymbol(String symbol) {
     Logger.info("Unsubscribing from updates for symbol: {}", symbol);
     subscribedSymbols.remove(symbol);
+    symbolsPersistence.remove(symbol);
     String message = "{\"type\":\"unsubscribe\",\"symbol\":\"" + symbol + "\"}";
     send(message);
   }
