@@ -1,12 +1,16 @@
 package edu.bu;
 
 import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.persistence.StoredSymbol;
 import edu.bu.persistence.SymbolsPersistence;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.tinylog.Logger;
@@ -29,9 +33,7 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
     this.enqueueHandler = enqueueHandler;
     this.symbolsPersistence = symbolsPersistence;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
-    symbolsPersistence
-        .readAll()
-        .forEach(storedSymbol -> subscribedSymbols.add(storedSymbol.symbol));
+    this.subscribedSymbols.addAll(filterRecentSymbols(symbolsPersistence.readAll()));
   }
 
   @Override
@@ -60,12 +62,12 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   }
 
   @Override
-  public void init(){
+  public void init() {
     Logger.info("Starting WebSocket based FinHub client");
     try {
       super.connectBlocking();
-    } catch(InterruptedException e){
-      Logger.error("Connection interrupted : {}",e.getMessage());
+    } catch (InterruptedException e) {
+      Logger.error("Connection interrupted : {}", e.getMessage());
     }
   }
 
@@ -90,5 +92,13 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
   @Override
   public Set<String> subscribedSymbols() {
     return Collections.unmodifiableSet(subscribedSymbols);
+  }
+
+  public Set<String> filterRecentSymbols(Set<StoredSymbol> symbols) {
+    Instant now = Instant.now();
+    return symbols.stream()
+        .filter(storedSymbol -> Duration.between(storedSymbol.createdAt, now).toDays() <= 10)
+        .map(storedSymbol -> storedSymbol.symbol)
+        .collect(Collectors.toSet());
   }
 }
