@@ -15,7 +15,7 @@ dependencies {
 	implementation project(':stock-app-shared')
 }
 task runService(type: JavaExec) {
-	mainClass = 'edu.bu.StockAppServer'
+	mainClass = 'edu.bu.FinhubService'
 	classpath = sourceSets.main.runtimeClasspath
 }
 

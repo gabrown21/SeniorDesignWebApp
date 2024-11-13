@@ -30,7 +30,6 @@ public class FinhubService {
                 WEBHOOK_URI + "?token=" + API_TOKEN,
                 new EnqueueingFinhubResponseHandler("http://localhost:8010"),
                 symbolsPersistence);
-
     stockUpdatesClient.init();
 
     // Start HTTP server for handling subscribe/unsubscribe requests
