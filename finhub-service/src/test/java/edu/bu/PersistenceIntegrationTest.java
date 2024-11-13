@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 
 import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.persistence.FileBasedSymbolsPersistenceImpl;
+import edu.bu.persistence.SQLiteSymbolPersistence;
 import edu.bu.persistence.SymbolsPersistence;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ public class PersistenceIntegrationTest {
 
   @Test
   public void createRestartConfirm() throws URISyntaxException, InterruptedException {
-    SymbolsPersistence symbolsPersistence = new FileBasedSymbolsPersistenceImpl();
+    SymbolsPersistence symbolsPersistence = new SQLiteSymbolPersistence();
 
     FinHubWebSocketClient firstFinHubWebSocketClient =
         new FinHubWebSocketClient(

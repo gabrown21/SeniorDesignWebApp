@@ -11,6 +11,9 @@ import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
+
+import edu.bu.persistence.SQLiteSymbolPersistence;
+import edu.bu.persistence.SymbolsPersistence;
 import org.tinylog.Logger;
 
 /** Class for finhub-service and establishes the endpoints related to finhub. */
@@ -18,8 +21,9 @@ public class FinhubService {
   static final String MOCK_FINHUB_ARGUMENT = "mockFinhub";
   static final String WEBHOOK_URI = "wss://ws.finnhub.io";
   static final String API_TOKEN = "cq1vjm1r01ql95nces30cq1vjm1r01ql95nces3g";
-  static final FileBasedSymbolsPersistenceImpl symbolsPersistence =
-      new FileBasedSymbolsPersistenceImpl();
+//  static final FileBasedSymbolsPersistenceImpl fbSymbolsPersistence =
+//      new FileBasedSymbolsPersistenceImpl();
+  static final SymbolsPersistence sqlSymbolsPersistence = new SQLiteSymbolPersistence();
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
@@ -30,7 +34,7 @@ public class FinhubService {
             : new FinHubWebSocketClient(
                 WEBHOOK_URI + "?token=" + API_TOKEN,
                 new EnqueueingFinhubResponseHandler("http://localhost:8010"),
-                symbolsPersistence);
+                sqlSymbolsPersistence);
     stockUpdatesClient.init();
 
     // Start HTTP server for handling subscribe/unsubscribe requests
