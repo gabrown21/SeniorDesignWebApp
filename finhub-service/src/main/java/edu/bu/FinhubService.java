@@ -19,11 +19,11 @@ public class FinhubService {
   static final String MOCK_FINHUB_ARGUMENT = "mockFinhub";
   static final String WEBHOOK_URI = "wss://ws.finnhub.io";
   static final String API_TOKEN = "cq1vjm1r01ql95nces30cq1vjm1r01ql95nces3g";
-  //  static final FileBasedSymbolsPersistenceImpl fbSymbolsPersistence =
-  //      new FileBasedSymbolsPersistenceImpl();
-  static final SymbolsPersistence sqlSymbolsPersistence = new SQLiteSymbolPersistence();
 
   public static void main(String[] args) throws IOException, URISyntaxException {
+    // final FileBasedSymbolsPersistenceImpl fbSymbolsPersistence = new
+    // FileBasedSymbolsPersistenceImpl();
+    final SymbolsPersistence sqlSymbolsPersistence = new SQLiteSymbolPersistence();
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
     StockUpdatesClient stockUpdatesClient =
         List.of(args).contains(MOCK_FINHUB_ARGUMENT)

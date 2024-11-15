@@ -33,7 +33,6 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
     this.enqueueHandler = enqueueHandler;
     this.symbolsPersistence = symbolsPersistence;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
-    this.subscribedSymbols.addAll(filterRecentSymbols(symbolsPersistence.readAll()));
   }
 
   @Override
@@ -66,6 +65,12 @@ public class FinHubWebSocketClient extends WebSocketClient implements StockUpdat
     Logger.info("Starting WebSocket based FinHub client");
     try {
       super.connectBlocking();
+      this.subscribedSymbols.addAll(filterRecentSymbols(symbolsPersistence.readAll()));
+      for (String symbols : subscribedSymbols) {
+        String message = "{\"type\":\"subscribe\",\"symbol\":\"" + symbols + "\"}";
+        send(message);
+        Logger.info("Re Subscribed to symbol: {}", symbols);
+      }
     } catch (InterruptedException e) {
       Logger.error("Connection interrupted : {}", e.getMessage());
     }
