@@ -5,6 +5,8 @@ import edu.bu.handlers.EnqueueingFinhubResponseHandler;
 import edu.bu.handlers.SubscribeHandler;
 import edu.bu.handlers.SubscribedSymbolsHandler;
 import edu.bu.handlers.UnsubscribeHandler;
+import edu.bu.persistence.SQLiteSymbolPersistence;
+import edu.bu.persistence.SymbolsPersistence;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
@@ -19,6 +21,9 @@ public class FinhubService {
   static final String API_TOKEN = "cq1vjm1r01ql95nces30cq1vjm1r01ql95nces3g";
 
   public static void main(String[] args) throws IOException, URISyntaxException {
+    // final FileBasedSymbolsPersistenceImpl fbSymbolsPersistence = new
+    // FileBasedSymbolsPersistenceImpl();
+    final SymbolsPersistence sqlSymbolsPersistence = new SQLiteSymbolPersistence();
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
     StockUpdatesClient stockUpdatesClient =
         List.of(args).contains(MOCK_FINHUB_ARGUMENT)
@@ -26,9 +31,9 @@ public class FinhubService {
                 new EnqueueingFinhubResponseHandler("http://localhost:8010"), Set.of(args))
             : new FinHubWebSocketClient(
                 WEBHOOK_URI + "?token=" + API_TOKEN,
-                new EnqueueingFinhubResponseHandler("http://localhost:8010"));
-
-    stockUpdatesClient.connect();
+                new EnqueueingFinhubResponseHandler("http://localhost:8010"),
+                sqlSymbolsPersistence);
+    stockUpdatesClient.init();
 
     // Start HTTP server for handling subscribe/unsubscribe requests
     HttpServer server = HttpServer.create(new InetSocketAddress(8004), 0);

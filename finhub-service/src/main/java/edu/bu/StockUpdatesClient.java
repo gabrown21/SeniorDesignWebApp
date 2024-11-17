@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public interface StockUpdatesClient {
   /** Connect to the server that will be providing this client with updates. */
-  void connect();
+  void init();
 
   public void addSymbol(String symbol);
 

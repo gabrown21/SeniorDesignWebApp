@@ -13,9 +13,10 @@ dependencies {
 	testImplementation platform('org.junit:junit-bom:5.10.0')
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	implementation project(':stock-app-shared')
+	implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
 }
 task runService(type: JavaExec) {
-	mainClass = 'edu.bu.StockAppServer'
+	mainClass = 'edu.bu.FinhubService'
 	classpath = sourceSets.main.runtimeClasspath
 }
 
@@ -29,6 +30,14 @@ task runServerWithMockFinhubPreload(type: JavaExec) {
 	mainClass = 'edu.bu.FinhubService'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ["mockFinhub", "msBetweenCalls=10"]
+}
+task executePersistenceIntegrationTest(type: Test) {
+	useJUnitPlatform {
+		includeTags "IntegrationTest"
+	}
+	testLogging {
+		showStandardStreams = true
+	}
 }
 
 test {
