@@ -1,6 +1,6 @@
 package edu.bu;
 
-import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.finnhub.sqs.SQSResponseHandler;
 import edu.bu.persistence.StoredSymbol;
 import edu.bu.persistence.SymbolsPersistence;
 import java.io.IOException;
@@ -20,17 +20,19 @@ import org.tinylog.Logger;
  * interest and handlers for FinHub responses.
  */
 public class FinHubWebSocketClient extends WebSocketClient implements StockUpdatesClient {
-  private final EnqueueingFinhubResponseHandler enqueueHandler;
+  // private final EnqueueingFinhubResponseHandler enqueueHandler;
+  private final SQSResponseHandler enqueueHandler;
   private final SymbolsPersistence symbolsPersistence;
   final Set<String> subscribedSymbols;
 
   public FinHubWebSocketClient(
       String serverUri,
-      EnqueueingFinhubResponseHandler enqueueHandler,
+      SQSResponseHandler sqsResponseHandler,
       SymbolsPersistence symbolsPersistence)
       throws URISyntaxException {
     super(new URI(serverUri));
-    this.enqueueHandler = enqueueHandler;
+    // this.enqueueHandler = enqueueHandler;
+    this.enqueueHandler = sqsResponseHandler;
     this.symbolsPersistence = symbolsPersistence;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
   }

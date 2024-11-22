@@ -1,7 +1,7 @@
 package edu.bu;
 
 import com.sun.net.httpserver.HttpServer;
-import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.finnhub.sqs.SQSResponseHandler;
 import edu.bu.handlers.SubscribeHandler;
 import edu.bu.handlers.SubscribedSymbolsHandler;
 import edu.bu.handlers.UnsubscribeHandler;
@@ -27,11 +27,10 @@ public class FinhubService {
     Logger.info("Starting FinnhubService with arguments: {}", List.of(args));
     StockUpdatesClient stockUpdatesClient =
         List.of(args).contains(MOCK_FINHUB_ARGUMENT)
-            ? new MockFinhubClient(
-                new EnqueueingFinhubResponseHandler("http://localhost:8010"), Set.of(args))
+            ? new MockFinhubClient(new SQSResponseHandler(), Set.of(args))
             : new FinHubWebSocketClient(
                 WEBHOOK_URI + "?token=" + API_TOKEN,
-                new EnqueueingFinhubResponseHandler("http://localhost:8010"),
+                new SQSResponseHandler(),
                 sqlSymbolsPersistence);
     stockUpdatesClient.init();
 
