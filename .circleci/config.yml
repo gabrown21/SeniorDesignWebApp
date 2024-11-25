@@ -2,9 +2,23 @@ version: 2.1
 jobs:
   build-and-fully-test-java:
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:17.0
     steps:
       - checkout
+      - run:
+          name: Install AWS CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y awscli
+      - run:
+          name: Configure AWS CLI Profile
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $AWS_DEFAULT_REGION --profile default
+      - run:
+          name: Verify AWS Configuration
+          command: aws sts get-caller-identity --profile default
       - run:
           name: Calculate cache key
           command: |-
