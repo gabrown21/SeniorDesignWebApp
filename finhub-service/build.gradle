@@ -14,7 +14,10 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	implementation project(':stock-app-shared')
 	implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
-	implementation 'software.amazon.awssdk:sqs:2.20.0'
+	implementation 'software.amazon.awssdk:sqs:2.20.20'
+	implementation 'software.amazon.awssdk:sso:2.20.74'
+	implementation 'software.amazon.awssdk:ssooidc:2.20.74'
+	implementation 'software.amazon.awssdk:auth:2.20.74'
 }
 task runService(type: JavaExec) {
 	mainClass = 'edu.bu.FinhubService'
