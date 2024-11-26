@@ -22,7 +22,6 @@ public class InMemoryStore implements DataStore {
 
   @Override
   public void update(List<FinhubResponse> responses) {
-    // responses.sort(Comparator.comparingLong(response -> response.msSinceEpoch));
     for (FinhubResponse response : responses) {
       responsesBySymbol
           .computeIfAbsent(response.symbol.toUpperCase(), key -> new Stack<>())
