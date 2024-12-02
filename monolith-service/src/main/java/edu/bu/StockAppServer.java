@@ -40,7 +40,7 @@ public class StockAppServer {
     BasicWebServer webServer = new BasicWebServer(store, analyticsComputor, metricsTracker);
     webServer.start();
 
-    QueueReader queueReader = new QueueReader(store, QUEUE_SERVICE_URL, metricsTracker);
+    SQSQueueReader queueReader = new SQSQueueReader(store, metricsTracker);
     try {
       queueReader.start();
     } catch (Exception e) {

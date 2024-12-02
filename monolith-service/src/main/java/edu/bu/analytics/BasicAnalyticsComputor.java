@@ -61,8 +61,9 @@ public class BasicAnalyticsComputor implements AnalyticsComputor {
    */
   public double currentPrice(String symbol) throws UnknownSymbolException {
     checkSymbolExists(symbol);
-
-    return dataStore.getHistory(symbol).get(0).price;
+    List<FinhubResponse> history = new ArrayList<>(dataStore.getHistory(symbol));
+    history.sort(Comparator.comparingLong(data -> -data.msSinceEpoch));
+    return history.get(0).price;
   }
 
   /**

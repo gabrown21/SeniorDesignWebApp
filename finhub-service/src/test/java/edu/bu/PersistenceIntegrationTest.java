@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.finnhub.sqs.SQSResponseHandler;
 import edu.bu.persistence.SQLiteSymbolPersistence;
 import edu.bu.persistence.SymbolsPersistence;
 import java.net.URISyntaxException;
@@ -16,11 +16,11 @@ import org.tinylog.Logger;
 @Tag("IntegrationTest")
 public class PersistenceIntegrationTest {
 
-  EnqueueingFinhubResponseHandler mockEnqueueingFinnhubResponseHandler;
+  SQSResponseHandler mockEnqueueingFinnhubResponseHandler;
 
   @BeforeEach
   public void setUp() {
-    mockEnqueueingFinnhubResponseHandler = mock(EnqueueingFinhubResponseHandler.class);
+    mockEnqueueingFinnhubResponseHandler = mock(SQSResponseHandler.class);
   }
 
   @Test

@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 clear
-
-echo "Starting Queue Service in a new process"
-gradle queue-service:runService &
-queueServicePid=$!
-echo "Queue Service PID is $queueServicePid"
+echo "Purging SQS queue"
+aws sqs purge-queue --queue-url "https://sqs.us-east-2.amazonaws.com/183631322250/GabrielBrown-Standard1" --region "us-east-2"
 
 sleep 5
 
@@ -31,7 +28,6 @@ gradle executeServerIntegrationTest
 sleep 2
 
 echo "Stopping all services"
-kill -9 $queueServicePid
 kill -9 $finnhubServicePid
 kill -9 $monolithServicePid
 # exit with result of integration test and not the above kill command which would have been the default

@@ -1,5 +1,6 @@
 package edu.bu.handlers;
 
+import edu.bu.FinnhubResponseHandler;
 import edu.bu.finhub.FinhubParser;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import org.tinylog.Logger;
 
 /** Handler to handle enqueing finnhub responses */
-public class EnqueueingFinhubResponseHandler {
+public class EnqueueingFinhubResponseHandler implements FinnhubResponseHandler {
   private final String queueServiceUrl;
   private final FinhubParser parser = new FinhubParser();
 
@@ -17,6 +18,7 @@ public class EnqueueingFinhubResponseHandler {
     this.queueServiceUrl = queueServiceUrl;
   }
 
+  @Override
   public void enqueue(String finnhubResponse) throws IOException {
     Logger.info("Sending message to queue-service: " + finnhubResponse);
     URL url = new URL(queueServiceUrl + "/enqueue");

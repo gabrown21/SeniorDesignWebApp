@@ -2,7 +2,7 @@ package edu.bu;
 
 import com.google.common.collect.ImmutableList;
 import edu.bu.finhub.FinhubResponse;
-import edu.bu.handlers.EnqueueingFinhubResponseHandler;
+import edu.bu.finnhub.sqs.SQSResponseHandler;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -21,7 +21,8 @@ import org.tinylog.Logger;
 public class MockFinhubClient implements StockUpdatesClient {
   static final String MS_BETWEEN_CALLS_ARGUMENT = "msBetweenCalls";
   static final long MS_BETWEEN_CALLS_DEFAULT = 5000;
-  private final EnqueueingFinhubResponseHandler enqueueHandler;
+  // private final EnqueueingFinhubResponseHandler enqueueHandler;
+  private final SQSResponseHandler enqueueHandler;
   private String stringResponse;
   // the time of these responses is not used - this mock will generate timestamps mimicing the time
   // at which it is executed
@@ -48,7 +49,7 @@ public class MockFinhubClient implements StockUpdatesClient {
   List<String> symbolOrder;
   int responsesCount = 0;
 
-  public MockFinhubClient(EnqueueingFinhubResponseHandler enqueueHandler, Set<String> arguments) {
+  public MockFinhubClient(SQSResponseHandler enqueueHandler, Set<String> arguments) {
     this.enqueueHandler = enqueueHandler;
     this.arguments = arguments;
     this.subscribedSymbols = new ConcurrentSkipListSet<>();
