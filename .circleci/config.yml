@@ -30,6 +30,16 @@ jobs:
           command: gradle clean build
       - run:
           command: ./serviceTest.sh
+      - run:
+          name: build deployable artifact
+          command: gradle monolith-service:uberJar
+      - run:
+          name: copy artifacts
+          command: cp monolith-service/build/libs/* build/libs/
+      - persist_to_workspace:
+          root: build
+          paths:
+            - libs/monolith-service-1.0-SNAPSHOT-uber.jar
       - store_test_results:
           path: build/test-results
       - save_cache:
@@ -42,3 +52,6 @@ workflows:
   build-and-fully-test:
     jobs:
       - build-and-fully-test-java
+      - deploy:
+          requires:
+            -build-and-fully-test-java
