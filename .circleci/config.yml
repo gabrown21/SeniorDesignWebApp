@@ -48,14 +48,7 @@ jobs:
             - ~/.gradle/caches
       - store_artifacts:
           path: build/reports
-workflows:
-  build-and-fully-test:
-    jobs:
-      - build-and-fully-test-java
-      - deploy:
-          requires:
-            - build-and-fully-test-java
-deploy:
+  deploy:
     docker:
       - image: circleci/python:3.8
     steps:
@@ -73,3 +66,10 @@ deploy:
       - run:
           name: Start latest monolith-service process in AWS
           command: ssh -v -o StrictHostKeyChecking=no ec2-user@18.191.235.217 'setsid nohup java -jar /home/ec2-user/monolith-service/monolith-service-1.0-SNAPSHOT-uber.jar > /home/ec2-user/monolith-service/monolith-service.log 2>&1 < /dev/null &'
+workflows:
+  build-and-fully-test:
+    jobs:
+      - build-and-fully-test-java
+      - deploy:
+          requires:
+            - build-and-fully-test-java
