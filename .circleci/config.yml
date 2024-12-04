@@ -73,6 +73,3 @@ workflows:
       - deploy:
           requires:
             - build-and-fully-test-java
-          filters:
-            branches:
-              only: main
