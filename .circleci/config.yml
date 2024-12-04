@@ -55,3 +55,21 @@ workflows:
       - deploy:
           requires:
             -build-and-fully-test-java
+  deploy:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - add_ssh_keys:
+          fingerprints:
+            -SHA256:F73kAVEUetGCTVynHXIb4EXNTermnbApikPXU6Q6bnI
+      - run:
+          name: Stop current monolith-service process in AWS
+          command: ssh -v -o StrictHostKeyChecking=no ec2-user@18.191.235.217 'pkill -f monolith-service-1.0 || true' || true
+      - run:
+          name: Copy latest uber jar over to AWS
+          command: scp -v -o StrictHostKeyChecking=no /tmp/workspace/libs/monolith-service-1.0-SNAPSHOT-uber.jar ec2-user@18.191.235.217://home/ec2-user/monolith-service
+      - run:
+          name: Start latest monolith-service process in AWS
+          command: ssh -v -o StrictHostKeyChecking=no ec2-user@18.191.235.217 'setsid nohup java -jar /home/ec2-user/monolith-service/monolith-service-1.0-SNAPSHOT-uber.jar > /home/ec2-user/monolith-service/monolith-service.log 2>&1 < /dev/null &'
