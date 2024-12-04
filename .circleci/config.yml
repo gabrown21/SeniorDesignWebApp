@@ -54,8 +54,8 @@ workflows:
       - build-and-fully-test-java
       - deploy:
           requires:
-            -build-and-fully-test-java
-  deploy:
+            - build-and-fully-test-java
+deploy:
     docker:
       - image: circleci/python:3.8
     steps:
@@ -63,7 +63,7 @@ workflows:
           at: /tmp/workspace
       - add_ssh_keys:
           fingerprints:
-            -SHA256:F73kAVEUetGCTVynHXIb4EXNTermnbApikPXU6Q6bnI
+            - SHA256:F73kAVEUetGCTVynHXIb4EXNTermnbApikPXU6Q6bnI
       - run:
           name: Stop current monolith-service process in AWS
           command: ssh -v -o StrictHostKeyChecking=no ec2-user@18.191.235.217 'pkill -f monolith-service-1.0 || true' || true
