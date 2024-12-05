@@ -16,6 +16,26 @@ dependencies {
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'software.amazon.awssdk:sqs:2.20.0'
 }
+
+task uberJar(type: Jar) {
+	archiveClassifier.set('uber')
+	from sourceSets.main.output
+
+	// Include dependencies
+	dependsOn configurations.runtimeClasspath
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	manifest {
+		attributes(
+				'Main-Class': 'edu.bu.StockAppServer'
+		)
+	}
+}
+
 task runService(type: JavaExec) {
 	mainClass = 'edu.bu.StockAppServer'
 	classpath = sourceSets.main.runtimeClasspath

@@ -27,7 +27,7 @@ export const routes: RouteObject[] = [
           // Convert the response to JSON
           // Return the most active symbol
           try {
-            const response = await fetch(`${API_URL}/most-active`);
+            const response = await fetch(`${API_URL}/mostactive`);
             if (!response.ok) {
               throw new Error("Failed fetching most active stock.\n");
             }
@@ -68,7 +68,7 @@ export const routes: RouteObject[] = [
             loader: async ({ params }) => {
               const response = await fetch(`${API_URL}/price/${params.symbol}`);
               const data = await response.json();
-              return data.price;
+              return data.currentPrice;
             },
             errorElement: <div>Failed to load price.</div>,
           },
@@ -78,7 +78,7 @@ export const routes: RouteObject[] = [
             loader: async ({ params }) => {
               const response = await fetch(`${API_URL}/averagevolume/${params.symbol}`);
               const data = await response.json();
-              return data.averageVolume;
+              return data.averageVolumePerSecond;
             },
             errorElement: <div>Failed to load average volume data.</div>,
           }
