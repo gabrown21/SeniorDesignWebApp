@@ -5,7 +5,10 @@ import com.sun.net.httpserver.HttpHandler;
 import edu.bu.analytics.AnalyticsComputor;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import edu.bu.analytics.UnknownSymbolException;
 import org.json.simple.JSONObject;
+import org.tinylog.Logger;
 
 /** Most active stock handler that inherits from HttpHandler */
 public class MostActiveStockHandler implements HttpHandler {
@@ -20,8 +23,13 @@ public class MostActiveStockHandler implements HttpHandler {
     JSONObject responseJson = new JSONObject();
     String mostActiveStock = analyticsComputor.mostActiveStock();
     responseJson.put("mostActiveStock", mostActiveStock);
-
-    String response = responseJson.toJSONString();
+      long totalVolume = 0;
+      try {
+          totalVolume = analyticsComputor.totalObservedVolume(mostActiveStock);
+      } catch (UnknownSymbolException e) {
+        Logger.error(e.getMessage());
+      }
+      String response = responseJson.toJSONString() + " : " + totalVolume;
     exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 

@@ -2,13 +2,26 @@ package edu.bu.metrics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** This will calculate metrics for the StockApp */
 public class MetricsTracker {
   private final Map<String, Integer> symbolUpdateCounts = new HashMap<>();
   private final Map<String, Integer> priceRequestCounts = new HashMap<>();
+  private final ConcurrentMap<String, Integer> finhubUpdates;
 
+  public MetricsTracker() {
+    finhubUpdates = new ConcurrentHashMap<>();
+  }
+  public synchronized void incrementFinhubUpdate(String symbol) {
+    finhubUpdates.merge(symbol, 1, Integer::sum);
+  }
+
+  public synchronized int getFinhubUpdateCount(String symbol) {
+    return finhubUpdates.getOrDefault(symbol, 0);
+  }
   public void recordUpdate(String symbol) {
     symbolUpdateCounts.put(symbol, symbolUpdateCounts.getOrDefault(symbol, 0) + 1);
   }
