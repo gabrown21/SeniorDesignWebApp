@@ -25,10 +25,11 @@ public class MostActiveStockHandler implements HttpHandler {
     long totalVolume = 0;
     try {
       totalVolume = analyticsComputor.totalObservedVolume(mostActiveStock);
+      responseJson.put("totalVolume", totalVolume);
     } catch (UnknownSymbolException e) {
       Logger.error(e.getMessage());
     }
-    String response = responseJson.toJSONString() + " : " + totalVolume;
+    String response = responseJson.toJSONString();
     exchange.getResponseHeaders().add("Content-Type", "application/json");
     exchange.sendResponseHeaders(200, response.length());
 
