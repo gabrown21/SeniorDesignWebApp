@@ -45,6 +45,7 @@ public class BasicWebServer {
     server.createContext(
         "/averagevolume", new CORSHandler(new AverageVolumePerSecondHandler(analyticsComputor)));
 
+    server.createContext("/predictions", new CORSHandler(new PredictionHandler()));
     // Start the server
     server.setExecutor(null); // Use the default executor
     server.start();

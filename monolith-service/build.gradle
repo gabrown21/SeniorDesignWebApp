@@ -15,6 +15,10 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'software.amazon.awssdk:sqs:2.20.0'
+	implementation platform('com.google.cloud:libraries-bom:26.1.4')
+	implementation 'com.google.cloud:google-cloud-firestore'
+	implementation 'com.google.auth:google-auth-library-oauth2-http'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 task uberJar(type: Jar) {
