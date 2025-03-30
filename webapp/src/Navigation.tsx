@@ -11,6 +11,9 @@ export const Navigation: React.FC = () => {
         <li>
           <Link to="/mostactive">Most Active</Link>
         </li>
+        <li>
+          <Link to="/predictions">Predictions</Link>
+        </li>
       </ul>
     </nav>
   )

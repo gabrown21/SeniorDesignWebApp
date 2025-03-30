@@ -6,6 +6,7 @@ import { Home } from "./Home"
 import { API_URL } from "./constants"
 import { Price } from "./Price"
 import {AverageVolume} from "./AverageVolume"
+import { Predictions } from "./Predictions";  
 
 // This object describes the structure of the app: its possible screens, parameters,
 // and data loading operations.
@@ -40,6 +41,25 @@ export const routes: RouteObject[] = [
         // Provide JSX to show if the data fails to load
         errorElement: <div>Failed loading most-active stock</div>,
       },
+      {
+      path: "predictions",
+      element: <Predictions />,
+      loader: async () => {
+        try {
+          const response = await fetch(`${API_URL}/predictions`);
+          console.log("API response status:", response.status); // log status
+          const data = await response.json();
+          console.log("Data received from API:", data); // log data received
+          if (!response.ok) {
+            throw new Error("Failed fetching predictions");
+          }
+          return data.predictions[0];  
+        } catch (error) {
+          throw new Error("Failed to load predictions.\n" + (error as Error).message);
+        }
+      },
+      errorElement: <div>Failed loading predictions</div>,
+    },
       {
         path: "symbols",
         element: <Symbols />,
